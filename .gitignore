@@ -1,0 +1,23 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Data & Models (Jangan push file gede!)
+ai_engine/data/
+ai_engine/models/*.keras
+ai_engine/models/*.h5
+data_science/raw_data/
+data_science/clean_data/
+
+# WandB logs
+wandb/
+
+# Node modules (Frontend)
+frontend/node_modules/
