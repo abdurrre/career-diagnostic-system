@@ -21,3 +21,4 @@ wandb/
 
 # Node modules (Frontend)
 frontend/node_modules/
+ai_engine/src/data_loader.py
