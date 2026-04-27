@@ -30,7 +30,7 @@ def prepare_gap_data(csv_path, job_encoder, skill_binarizer):
 
 def run_training():
     DATA_DIR = 'ai_engine/data'
-    CSV_PATH = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/clean data/final_ready_it_jobs (1).csv'
+    CSV_PATH = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/clean data/final_ready_it_jobs (2).csv'
 
     metadata, job_encoder, skill_binarizer = load_artifacts(DATA_DIR)
     X_train, X_val, y_train, y_val = prepare_gap_data(CSV_PATH, job_encoder, skill_binarizer)
@@ -43,21 +43,21 @@ def run_training():
         embedding_dim=64
     )
 
-    pos_counts = y_train.sum(axis=0) 
+    pos_counts = y_train.sum(axis=0)
     neg_counts = len(y_train) - pos_counts
     skill_weights = neg_counts / (pos_counts + 1e-5)
     skill_weights = np.clip(skill_weights, a_min=1.0, a_max=100.0)
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-        loss=weighted_binary_crossentropy(skill_weights=skill_weights), 
+        loss=weighted_binary_crossentropy(skill_weights=skill_weights),
         metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.AUC(name='auc')]
     )
 
     init_wandb(project_name="career-diagnostic", run_name="gap_model_final_thresh_0.2")
-    
+
     elite_tracker = ElitePerformanceTracker(validation_data=(X_val, y_val), threshold=0.2)
-    
+
     wandb_logger = WandbMetricsLogger()
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
         filepath='ai_engine/models/gap_model.keras',
