@@ -11,13 +11,13 @@ def extract_skills(cv_text: str) -> list:
     # Dummy return sesuai dokumen
     return ["Python", "TensorFlow", "SQL"]
 
-def analyze_cv(skills: list, profession: str) -> dict: 
+def analyze_cv(skills: list, profession: str) -> dict:
     # Return dictionary sesuai spesifikasi output
     return {
-        "score": 72, 
-        "gap": { 
+        "score": 72,
+        "gap": {
             "critical": ["Docker", "Kubernetes"],
             "important": ["Terraform", "CI/CD"],
-            "supplementary": ["Helm", "Istio"] 
+            "supplementary": ["Helm", "Istio"]
         }
     }

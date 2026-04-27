@@ -9,7 +9,7 @@ class NERModel(tf.keras.Model):
         self.embedding_dim = embedding_dim
         self.rnn_units = rnn_units
         self.num_classes = num_classes
-        
+
         self.embedding = Embedding(input_dim=vocab_size, output_dim=embedding_dim, mask_zero=True, name="ner_embed")
         self.dropout = Dropout(0.3)
         self.bilstm = Bidirectional(LSTM(units=rnn_units, return_sequences=True), name="ner_bilstm")
@@ -44,19 +44,18 @@ class ScoringModel(tf.keras.Model):
         x = self.bn1(x, training=training)
         x = self.dense2(x)
         return self.out_layer(x)
-        
+
     def get_config(self):
-        # Karena gak ada parameter kustom di init, config standar udah cukup
         return super(ScoringModel, self).get_config()
 
 class GapModel(tf.keras.Model):
     def __init__(self, num_professions, num_skills, embedding_dim=32, **kwargs):
         super(GapModel, self).__init__(**kwargs)
-        # Simpan parameter sebagai atribut
+        
         self.num_professions = num_professions
         self.num_skills = num_skills
         self.embedding_dim = embedding_dim
-        
+
         self.prof_embedding = Embedding(num_professions, embedding_dim)
         self.flatten = tf.keras.layers.Flatten()
         self.dense1 = Dense(256, activation='relu')
