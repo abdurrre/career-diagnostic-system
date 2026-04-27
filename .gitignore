@@ -9,7 +9,7 @@ ENV/
 __pycache__/
 *.py[cod]
 
-# Data & Models (Jangan push file gede!)
+# Data & Models
 ai_engine/data/
 ai_engine/models/*.keras
 ai_engine/models/*.h5
