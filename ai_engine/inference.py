@@ -61,14 +61,14 @@ def analyze_cv(skills: list, profession: str) -> dict:
     matched = sorted(user_skills_canon & required_canon)
 
     # 1. SCORING MODEL
-    score = 0
+    score = 0.0
     if SCORING_MODEL and skill_binarizer:
         user_vec = skill_binarizer.transform([list(known_user)])[0].astype('float32')
         req_vec = skill_binarizer.transform([list(known_req)])[0].astype('float32')
         feature = np.concatenate([user_vec, req_vec])[np.newaxis, :]
-        score = round(float(SCORING_MODEL.predict(feature, verbose=0)[0][0]) * 100)
+        score = float(SCORING_MODEL.predict(feature, verbose=0)[0][0])
     else:
-        score = round((len(known_user & known_req) / len(known_req)) * 100) if known_req else 0
+        score = float(len(known_user & known_req) / len(known_req)) if known_req else 0.0
 
     # 2. GAP MODEL
     critical, important, supplementary = [], [], []
