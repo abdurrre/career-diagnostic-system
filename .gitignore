@@ -11,7 +11,6 @@ __pycache__/
 
 # Data & Models (Jangan push file gede!)
 ai_engine/data/
-ai_engine/models/*.keras
 ai_engine/models/*.h5
 data_science/raw_data/
 data_science/clean_data/
@@ -22,3 +21,6 @@ wandb/
 # Node modules (Frontend)
 frontend/node_modules/
 ai_engine/src/data_loader.py
+
+# dataset
+final_ready_it_jobs.csv

@@ -5,9 +5,11 @@ import pickle
 from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 
+
 def build_gap_artifacts():
     print("Membangun kamus data untuk Gap Model")
     csv_path = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/clean data/final_ready_it_jobs (2).csv'
+
     output_dir = 'ai_engine/data'
     os.makedirs(output_dir, exist_ok=True)
     
@@ -56,7 +58,6 @@ def build_ner_artifacts():
     jsonl_path = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/clean data/dataset_ner_skills_bersih.jsonl'
     output_dir = 'ai_engine/data'
     
-    # Pastikan file dari tim DS ada
     if not os.path.exists(jsonl_path):
         print(f"File {jsonl_path} tidak ditemukan")
         return
