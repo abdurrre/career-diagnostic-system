@@ -23,4 +23,5 @@ frontend/node_modules/
 ai_engine/src/data_loader.py
 
 # dataset
-final_ready_it_jobs.csv
+final_ready_it_jobs.csv*.keras
+*.keras
