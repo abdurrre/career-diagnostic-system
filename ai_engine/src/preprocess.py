@@ -2,18 +2,49 @@ import pandas as pd
 import json
 import os
 import pickle
+import re
 from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
+
+def clean_job_title(title):
+    if not isinstance(title, str):
+        return 'DROP'
+    
+    title = title.lower()
+    
+    # Mapping keyword IT secara ketat ke 7 kategori utama
+    if 'data scientist' in title or 'science' in title:
+        return 'Data Scientist'
+    elif 'data analyst' in title or 'analyst' in title:
+        return 'Data Analyst'
+    elif any(k in title for k in ['machine learning', 'mlops', 'ai', 'artificial intelligence']):
+        return 'AI Engineer'
+    elif 'data engineer' in title:
+        return 'Data Engineer'
+    elif 'backend' in title:
+        return 'Backend Developer'
+    elif 'frontend' in title:
+        return 'Frontend Developer'
+    elif 'fullstack' in title or 'full stack' in title:
+        return 'Fullstack Developer'
+    else:
+        return 'DROP'
 
 
 def build_gap_artifacts():
     print("Membangun kamus data untuk Gap Model")
-    csv_path = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/clean data/final_ready_it_jobs (2).csv'
+    csv_path = r'C:\Users\rohman\OneDrive\Documents\KULIAH\SEMESTER 6\MBKM\CAPSTONE PROJECT\career-diagnostic-system\ai_engine\data\final_ready_it_jobs (2).csv'
 
     output_dir = 'ai_engine/data'
     os.makedirs(output_dir, exist_ok=True)
     
     df = pd.read_csv(csv_path)
+    
+    # Cleaning label profesi sebelum di-encode
+    df['job_title'] = df['job_title'].apply(clean_job_title)
+    
+    # Filter hanya kategori yang relevan
+    df = df[df['job_title'] != 'DROP'].reset_index(drop=True)
     
     job_encoder = LabelEncoder()
     df['profession_id'] = job_encoder.fit_transform(df['job_title'])
@@ -55,7 +86,7 @@ def build_gap_artifacts():
 
 def build_ner_artifacts():
     print("\nMembangun kamus data untuk NER Model")
-    jsonl_path = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/clean data/dataset_ner_skills_bersih.jsonl'
+    jsonl_path = r'C:\Users\rohman\OneDrive\Documents\KULIAH\SEMESTER 6\MBKM\CAPSTONE PROJECT\career-diagnostic-system\ai_engine\data\dataset_ner_skills_bersih.jsonl'
     output_dir = 'ai_engine/data'
     
     if not os.path.exists(jsonl_path):

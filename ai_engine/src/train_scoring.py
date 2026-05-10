@@ -7,8 +7,9 @@ import tensorflow as tf
 from tensorflow.keras.layers import Dense, BatchNormalization, Dropout
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from preprocess import clean_job_title
 
-CSV_PATH = 'final_ready_it_jobs.csv'
+CSV_PATH = r'C:\Users\rohman\OneDrive\Documents\KULIAH\SEMESTER 6\MBKM\CAPSTONE PROJECT\career-diagnostic-system\ai_engine\data\final_ready_it_jobs (2).csv'
 ARTIFACTS_DIR = 'ai_engine/data'
 MODEL_SAVE_PATH = 'ai_engine/models/scoring_model.keras'
 
@@ -91,6 +92,11 @@ class ScoringModel(tf.keras.Model):
 def main():
     metadata, job_encoder, skill_binarizer = load_artifacts()
     df = pd.read_csv(CSV_PATH)
+    
+    # Cleaning label profesi
+    df['job_title'] = df['job_title'].apply(clean_job_title)
+    df = df[df['job_title'] != 'DROP'].reset_index(drop=True)
+    
     knowledge_base = build_knowledge_base(df)
     
     X, y = prepare_training_data(df, knowledge_base, skill_binarizer)
