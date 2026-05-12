@@ -9,6 +9,42 @@ from custom_metrics import weighted_binary_crossentropy
 from architectures import GapModel, NERModel
 from skill_normalizer import normalize_skills
 
+# Standarisasi Penamaan
+SKILL_ALIASES = {
+    "ai": "artificial intelligence",
+    "c": "c/c++",
+    "c++": "c/c++",
+    "aws": "amazon web services",
+    "js": "javascript",
+    "react js": "react",
+    "react.js": "react",
+    "node js": "node.js",
+    "nodejs": "node.js",
+    "vue js": "vue.js",
+    "vuejs": "vue.js",
+    "ts": "typescript",
+    "ml": "machine learning",
+    "dl": "deep learning",
+    "nlp": "natural language processing",
+    "cv": "computer vision",
+    "gcp": "google cloud platform",
+    "k8s": "kubernetes",
+    "html5": "html",
+    "css3": "css",
+    "postgresql": "postgres",
+    "db": "database",
+    "ui": "ui/ux",
+    "ux": "ui/ux",
+    "ui/ux design": "ui/ux",
+    "rn": "react native",
+    "tf": "tensorflow",
+    "pytorch": "torch"
+}
+
+def get_standard_skill(skill_name: str) -> str:
+    clean_name = skill_name.lower().strip()
+    return SKILL_ALIASES.get(clean_name, clean_name)
+
 # SETUP PATHS
 #BASE_DIR = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine'
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -18,11 +54,11 @@ MODELS_DIR = os.path.join(BASE_DIR, 'models')
 # LOAD ARTIFACTS
 try:
     # Artifacts Gap & Scoring
-    with open(f'{ARTIFACTS_DIR}/skill_binarizer.pkl', 'rb') as f:
+    with open(os.path.join(ARTIFACTS_DIR, 'skill_binarizer.pkl'), 'rb') as f:
         skill_binarizer = pickle.load(f)
-    with open(f'{ARTIFACTS_DIR}/job_encoder.pkl', 'rb') as f:
+    with open(os.path.join(ARTIFACTS_DIR, 'job_encoder.pkl'), 'rb') as f:
         job_encoder = pickle.load(f)
-    with open(f'{ARTIFACTS_DIR}/knowledge_base.json') as f:
+    with open(os.path.join(ARTIFACTS_DIR, 'knowledge_base.json')) as f:
         knowledge_base = json.load(f)
     SKILL_VOCAB = np.array(skill_binarizer.classes_)
 except FileNotFoundError as e:
@@ -33,9 +69,9 @@ except FileNotFoundError as e:
 
 try:
     # Artifacts NER
-    with open(f'{ARTIFACTS_DIR}/ner_tokenizer.pkl', 'rb') as f:
+    with open(os.path.join(ARTIFACTS_DIR, 'ner_tokenizer.pkl'), 'rb') as f:
         ner_tokenizer = pickle.load(f)
-    with open(f'{ARTIFACTS_DIR}/dataset-metadata.json', 'r') as f:
+    with open(os.path.join(ARTIFACTS_DIR, 'dataset-metadata.json'), 'r') as f:
         metadata = json.load(f)
     MAX_LEN = 256
 except FileNotFoundError as e:
@@ -47,7 +83,7 @@ except FileNotFoundError as e:
 # LOAD MODELS
 try:
     NER_MODEL = tf.keras.models.load_model(
-        f'{MODELS_DIR}/ner_model.keras', 
+        os.path.join(MODELS_DIR, 'ner_model.keras'), 
         custom_objects={'NERModel': NERModel}
     )
 except Exception as e:
@@ -56,7 +92,7 @@ except Exception as e:
 
 try:
     GAP_MODEL = tf.keras.models.load_model(
-        f'{MODELS_DIR}/gap_model.keras', 
+        os.path.join(MODELS_DIR, 'gap_model.keras'), 
         custom_objects={'loss': weighted_binary_crossentropy, 'GapModel': GapModel}
     )
 except Exception as e:
@@ -90,35 +126,43 @@ def extract_skills(cv_text: str) -> list:
     seq = ner_tokenizer.texts_to_sequences([tokens])[0]
     padded_seq = pad_sequences([seq], maxlen=MAX_LEN, padding='post', truncating='post')
 
-    # Prediksi BIO Tags
-    pred = NER_MODEL.predict(padded_seq, verbose=0)
-    pred_tags = np.argmax(pred, axis=-1)[0]
+            # Prediksi BIO Tags
+            pred = NER_MODEL.predict(padded_seq, verbose=0)
+            pred_tags = np.argmax(pred, axis=-1)[0]
 
-    # Decoding Tags ke Teks
-    extracted_skills = []
-    current_skill = []
+            # Decoding Tags ke Teks
+            current_skill = []
+            for word, tag in zip(tokens, pred_tags[:len(tokens)]):
+                if tag == 1: # B-SKILL
+                    if current_skill:
+                        ner_skills.append(" ".join(current_skill).lower())
+                    current_skill = [word]
+                elif tag == 2: # I-SKILL
+                    if current_skill:
+                        current_skill.append(word)
+                else: # O
+                    if current_skill:
+                        ner_skills.append(" ".join(current_skill).lower())
+                        current_skill = []
+                        
+            if current_skill:
+                ner_skills.append(" ".join(current_skill).lower())
 
-    for word, tag in zip(tokens, pred_tags[:len(tokens)]):
-        if tag == 1: # B-SKILL
-            if current_skill:
-                extracted_skills.append(" ".join(current_skill))
-            current_skill = [word]
-        elif tag == 2: # I-SKILL
-            if current_skill:
-                current_skill.append(word)
-        else: # O
-            if current_skill:
-                extracted_skills.append(" ".join(current_skill))
-                current_skill = []
-                
-    if current_skill:
-        extracted_skills.append(" ".join(current_skill))
-
+    # 3. GABUNGKAN & HAPUS DUPLIKAT
+    extracted_skills = list(set(rule_based_skills + ner_skills))
     return extracted_skills
 
 
 # ANALISIS GAP & SCORING
 def analyze_cv(skills: list, profession: str) -> dict:
+    if not skills or len(skills) == 0:
+        return {
+            "score": 0.0,
+            "matched_skills": [],
+            "gap": {"critical": [], "important": [], "supplementary": []},
+            "error": "Tidak ada skill relevan yang terdeteksi di CV."
+        }
+
     if not knowledge_base or job_encoder is None:
         return {"error": "Artifacts not loaded."}
         
@@ -130,10 +174,16 @@ def analyze_cv(skills: list, profession: str) -> dict:
     user_skills_canon = set(normalize_skills(skills, list(SKILL_VOCAB)))
     required_canon = set(knowledge_base.get(profession, []))
 
+    # Terapkan SKILL_ALIASES ke set skill
+    user_skills_aliased = {get_standard_skill(s) for s in user_skills_canon}
+    required_aliased = {get_standard_skill(s) for s in required_canon}
+
+    # Untuk input model Keras
     known_user = {s for s in user_skills_canon if s in SKILL_VOCAB}
     known_req = {s for s in required_canon if s in SKILL_VOCAB}
 
-    matched = sorted(user_skills_canon & required_canon)
+    # Matched skills
+    matched = sorted(user_skills_aliased & required_aliased)
 
     # Scoring
     critical, important, supplementary = [], [], []
@@ -191,15 +241,13 @@ if __name__ == "__main__":
     cv_mentah = "Saya seorang mahasiswa yang mahir menggunakan Python, React, dan SQL untuk web development. Saya juga pernah menggunakan Git dan Docker."
     target_pekerjaan = "Data Analyst"
     
-    print(f"TEST RUN END-TO-END PIPELINE")
+    print(f"TEST RUN")
     print(f"Profesi Target : {target_pekerjaan}")
     print(f"Teks CV Asli   : '{cv_mentah}'\n")
     
-    # Ekstraksi (Deep Learning NER)
     extracted = extract_skills(cv_mentah)
     print(f"Ekstraksi NER Model: {extracted}\n")
     
-    # Normalisasi, Gap, dan Scoring
     print(f"Hasil Analisis Akhir (JSON):")
     hasil_analisis = analyze_cv(extracted, target_pekerjaan)
     print(json.dumps(hasil_analisis, indent=4))

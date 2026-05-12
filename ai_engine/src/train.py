@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
+from preprocess import clean_job_title
 
 from architectures import GapModel
 from custom_metrics import weighted_binary_crossentropy
@@ -22,6 +23,11 @@ def load_artifacts(data_dir):
 
 def prepare_gap_data(csv_path, job_encoder, skill_binarizer):
     df = pd.read_csv(csv_path)
+    
+    # Cleaning label profesi
+    df['job_title'] = df['job_title'].apply(clean_job_title)
+    df = df[df['job_title'] != 'DROP'].reset_index(drop=True)
+    
     X = job_encoder.transform(df['job_title'])
     df['skill_list'] = df['cleaned_skills'].apply(lambda x: [s.strip() for s in str(x).split(',')])
     y = skill_binarizer.transform(df['skill_list'])
@@ -30,7 +36,7 @@ def prepare_gap_data(csv_path, job_encoder, skill_binarizer):
 
 def run_training():
     DATA_DIR = 'ai_engine/data'
-    CSV_PATH = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/clean data/final_ready_it_jobs (2).csv'
+    CSV_PATH = r'C:\Users\rohman\OneDrive\Documents\KULIAH\SEMESTER 6\MBKM\CAPSTONE PROJECT\career-diagnostic-system\ai_engine\data\final_ready_it_jobs (2).csv'
 
     metadata, job_encoder, skill_binarizer = load_artifacts(DATA_DIR)
     X_train, X_val, y_train, y_val = prepare_gap_data(CSV_PATH, job_encoder, skill_binarizer)
