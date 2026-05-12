@@ -6,7 +6,7 @@ import tensorflow as tf
 import re
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from custom_metrics import weighted_binary_crossentropy
-from architectures import GapModel, ScoringModel, NERModel
+from architectures import GapModel, NERModel
 from skill_normalizer import normalize_skills
 
 # Standarisasi Penamaan
@@ -46,7 +46,8 @@ def get_standard_skill(skill_name: str) -> str:
     return SKILL_ALIASES.get(clean_name, clean_name)
 
 # SETUP PATHS
-BASE_DIR = r'C:\Users\rohman\OneDrive\Documents\KULIAH\SEMESTER 6\MBKM\CAPSTONE PROJECT\career-diagnostic-system\ai_engine'
+#BASE_DIR = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine'
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 ARTIFACTS_DIR = os.path.join(BASE_DIR, 'data')
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
 
@@ -60,19 +61,24 @@ try:
     with open(os.path.join(ARTIFACTS_DIR, 'knowledge_base.json')) as f:
         knowledge_base = json.load(f)
     SKILL_VOCAB = np.array(skill_binarizer.classes_)
+except FileNotFoundError as e:
+    print(f"Warning: Artifacts Gap/Scoring not found. {e}")
+    skill_binarizer, job_encoder = None, None
+    knowledge_base = {}
+    SKILL_VOCAB = np.array([])
 
+try:
     # Artifacts NER
     with open(os.path.join(ARTIFACTS_DIR, 'ner_tokenizer.pkl'), 'rb') as f:
         ner_tokenizer = pickle.load(f)
     with open(os.path.join(ARTIFACTS_DIR, 'dataset-metadata.json'), 'r') as f:
         metadata = json.load(f)
     MAX_LEN = 256
-
 except FileNotFoundError as e:
-    print(f"Warning: Artifacts not found. {e}")
-    skill_binarizer, job_encoder, ner_tokenizer = None, None, None
-    knowledge_base = {}
-    SKILL_VOCAB = np.array([])
+    print(f"Warning: Artifacts NER not found. {e}")
+    ner_tokenizer = None
+    metadata = {}
+    MAX_LEN = 256
 
 # LOAD MODELS
 try:
@@ -83,15 +89,6 @@ try:
 except Exception as e:
     print(f"Warning: NER_MODEL not loaded. ({e})")
     NER_MODEL = None
-
-try:
-    SCORING_MODEL = tf.keras.models.load_model(
-        os.path.join(MODELS_DIR, 'scoring_model.keras'), 
-        custom_objects={'ScoringModel': ScoringModel}
-    )
-except Exception as e:
-    print(f"Warning: ScoringModel not loaded. ({e})")
-    SCORING_MODEL = None
 
 try:
     GAP_MODEL = tf.keras.models.load_model(
@@ -105,23 +102,29 @@ except Exception as e:
 
 # EKSTRAKSI SKILL DARI TEKS MENTAH
 def extract_skills(cv_text: str) -> list:
-    # 1. RULE-BASED EXTRACTION
-    cv_text_lower = cv_text.lower()
-    rule_based_skills = []
-    for skill in SKILL_VOCAB:
-        skill_str = str(skill).lower()
-        if re.search(r'\b' + re.escape(skill_str) + r'\b', cv_text_lower):
-            rule_based_skills.append(skill_str)
+    if not NER_MODEL or not ner_tokenizer:
+        print("Warning: Menggunakan Fallback Keyword Matching karena NER Model tidak ditemukan.")
+        # Fallback: Naive keyword matching
+        fallback_skills = []
+        if len(SKILL_VOCAB) > 0:
+            # Cari skill dari SKILL_VOCAB yang text-nya muncul di CV
+            cv_lower = cv_text.lower()
+            for skill in SKILL_VOCAB:
+                if skill.lower() in cv_lower:
+                    fallback_skills.append(skill)
+        else:
+            # Hardcode fallback jika SKILL_VOCAB juga kosong
+            fallback_skills = ["python", "sql", "react", "git", "docker"]
+        return fallback_skills
 
-    # 2. NER MODEL EXTRACTION
-    ner_skills = []
-    if NER_MODEL and ner_tokenizer:
-        # Pecah teks jadi token
-        tokens = re.findall(r"[\w']+|[.,!?;]", cv_text)
-        if tokens:
-            # Sequencing & Padding
-            seq = ner_tokenizer.texts_to_sequences([tokens])[0]
-            padded_seq = pad_sequences([seq], maxlen=MAX_LEN, padding='post', truncating='post')
+    # Pecah teks jadi token
+    tokens = re.findall(r"[\w']+|[.,!?;]", cv_text)
+    if not tokens:
+        return []
+
+    # Sequencing & Padding
+    seq = ner_tokenizer.texts_to_sequences([tokens])[0]
+    padded_seq = pad_sequences([seq], maxlen=MAX_LEN, padding='post', truncating='post')
 
             # Prediksi BIO Tags
             pred = NER_MODEL.predict(padded_seq, verbose=0)
@@ -182,58 +185,50 @@ def analyze_cv(skills: list, profession: str) -> dict:
     # Matched skills
     matched = sorted(user_skills_aliased & required_aliased)
 
-    # SCORING MODEL
-    base_score = float(len(matched) / len(required_aliased)) if required_aliased else 0.0
-    score = 0.0
-    
-    if SCORING_MODEL and skill_binarizer:
-        user_vec = skill_binarizer.transform([list(known_user)])[0].astype('float32')
-        req_vec = skill_binarizer.transform([list(known_req)])[0].astype('float32')
-        feature = np.concatenate([user_vec, req_vec])[np.newaxis, :]
-        keras_pred_score = float(SCORING_MODEL.predict(feature, verbose=0)[0][0])
-        
-        # Hybrid Scoring Calculation
-        score = (keras_pred_score * 0.5) + (base_score * 0.5)
-        
-        if len(matched) > 0 and score < 0.05:
-            score = max(0.05, base_score)
-    else:
-        score = base_score
+    # Scoring
+    critical, important, supplementary = [], [], []
+    total_weight_required = 0.0
+    user_acquired_weight = 0.0
 
-    # GAP MODEL
-    critical, important, supplementary = set(), set(), set()
-    
+    WEIGHT_CRITICAL = 3.0
+    WEIGHT_IMPORTANT = 2.0
+    WEIGHT_SUPPLEMENTARY = 1.0
+
     if GAP_MODEL:
         prof_id = job_encoder.transform([profession])[0]
+
         pred_probs = GAP_MODEL.predict(np.array([prof_id]), verbose=0)[0]
-        
+
         for i, prob in enumerate(pred_probs):
-            raw_skill_name = SKILL_VOCAB[i]
-            std_skill_name = get_standard_skill(raw_skill_name)
-            
-            if std_skill_name not in user_skills_aliased:
-                if prob >= 0.8:
-                    critical.add(std_skill_name)
-                elif prob >= 0.4:
-                    important.add(std_skill_name)
-                elif prob >= 0.2:
-                    supplementary.add(std_skill_name)
-                    
-        important = important - critical
-        supplementary = supplementary - critical - important
+            skill_name = SKILL_VOCAB[i]
+
+            if prob >= 0.8:
+                weight = WEIGHT_CRITICAL
+                target_gap_list = critical
+            elif prob >= 0.4:
+                weight = WEIGHT_IMPORTANT
+                target_gap_list = important
+            elif prob >= 0.2:
+                weight = WEIGHT_SUPPLEMENTARY
+                target_gap_list = supplementary
+            else:
+                continue # Skip
+
+            total_weight_required += weight
+
+            if skill_name in known_user:
+                user_acquired_weight += weight
+            else:
+                target_gap_list.append(skill_name)
         
-        critical = sorted(list(critical))
-        important = sorted(list(important))
-        supplementary = sorted(list(supplementary))
+        score_ratio = (user_acquired_weight / total_weight_required) if total_weight_required > 0 else 0.0
     else:
-        missing = sorted(required_aliased - user_skills_aliased)
-        n = len(missing)
-        critical = missing[:max(1, n//3)]
-        important = missing[max(1, n//3):max(2, 2*n//3)]
-        supplementary = missing[max(2, 2*n//3):]
+        score_ratio = 0.0
+
+    final_score_percentage = round(score_ratio * 100, 2)
 
     return {
-        "score": score,
+        "score_percentage": final_score_percentage,
         "matched_skills": matched,
         "gap": {
             "critical": critical,

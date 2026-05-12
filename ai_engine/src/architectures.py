@@ -31,26 +31,6 @@ class NERModel(tf.keras.Model):
         })
         return config
 
-class ScoringModel(tf.keras.Model):
-    def __init__(self, num_skills, **kwargs):
-        super(ScoringModel, self).__init__(**kwargs)
-        self.num_skills = num_skills
-        self.dense1 = Dense(256, activation='relu')
-        self.bn1 = BatchNormalization()
-        self.dense2 = Dense(64, activation='relu')
-        self.out_layer = Dense(1, activation='sigmoid', name="score_out")
-
-    def call(self, inputs, training=False):
-        x = self.dense1(inputs)
-        x = self.bn1(x, training=training)
-        x = self.dense2(x)
-        return self.out_layer(x)
-
-    def get_config(self):
-        config = super(ScoringModel, self).get_config()
-        config.update({"num_skills": self.num_skills})
-        return config
-
 class GapModel(tf.keras.Model):
     def __init__(self, num_professions, num_skills, embedding_dim=32, **kwargs):
         super(GapModel, self).__init__(**kwargs)
