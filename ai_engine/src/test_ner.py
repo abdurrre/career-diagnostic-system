@@ -61,7 +61,7 @@ if __name__ == "__main__":
     hasil_2 = extract_skills_from_text(cv_text_2)
     print(f"Skill Terdeteksi: {hasil_2}\n")
     
-    # Test Case 3: Ujian Ekstrem (Typo & Campur Aduk)
+    # Test Case 3: Typo & Campur Aduk
     cv_text_3 = "Pernah jadi asisten lab Linear Algebra, bisa ngoding pakai C++ dan pake Pandas buat data."
     hasil_3 = extract_skills_from_text(cv_text_3)
     print(f"Skill Terdeteksi: {hasil_3}\n")
