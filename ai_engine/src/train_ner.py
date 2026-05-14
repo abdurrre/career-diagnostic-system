@@ -5,6 +5,9 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import pickle
 import os
+import wandb
+from tracker import init_wandb
+from wandb.integration.keras import WandbMetricsLogger
 
 ARTIFACTS_DIR = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine/data'
 JSONL_PATH = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine/data/dataset_ner_skills_bersih.jsonl'
@@ -76,6 +79,20 @@ if __name__ == "__main__":
     
     model_save_path = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine/models/ner_model.keras'
     
+    init_wandb(
+        project_name="career-diagnostic-system",
+        run_name="ner-model-training",
+        config={
+            "epochs": EPOCHS,
+            "batch_size": BATCH_SIZE,
+            "max_len": MAX_LEN,
+            "vocab_size": VOCAB_SIZE,
+            "num_classes": NUM_CLASSES,
+            "embedding_dim": 128,
+            "rnn_units": 64
+        }
+    )
+
     # Early Stopping
     early_stopping = EarlyStopping(
         monitor='loss', 
@@ -91,10 +108,14 @@ if __name__ == "__main__":
         save_best_only=True,
         verbose=1
     )
+    
+    wandb_logger = WandbMetricsLogger()
+    
     history = model.fit(
         train_dataset,
         epochs=EPOCHS,
-        callbacks=[early_stopping, model_checkpoint]
+        callbacks=[early_stopping, model_checkpoint, wandb_logger]
     )
 
+    wandb.finish()
     print(f"\nTraining selesai.")

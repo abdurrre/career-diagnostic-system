@@ -64,7 +64,6 @@ def build_gap_artifacts():
         "max_length": 128
     }
     
-    # Amankan file lama jika ada, biar bisa di-update
     metadata_path = os.path.join(output_dir, 'dataset-metadata.json')
     if os.path.exists(metadata_path):
         with open(metadata_path, 'r') as f:

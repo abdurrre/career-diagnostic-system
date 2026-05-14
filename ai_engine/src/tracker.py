@@ -4,15 +4,17 @@ import tensorflow as tf
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 
-def init_wandb(project_name="career-diagnostic-nlp", run_name="gap-model-training-v1"):
-    wandb.init(
-        project=project_name,
-        name=run_name,
-        config={
+def init_wandb(project_name="career-diagnostic-nlp", run_name="gap-model-training-v1", config=None):
+    if config is None:
+        config = {
             "learning_rate": 0.001,
             "epochs": 20,
             "batch_size": 32
         }
+    wandb.init(
+        project=project_name,
+        name=run_name,
+        config=config
     )
     print(f"WandB Tracking Started: {run_name}. Siap pamer metrik ke tim!")
 

@@ -9,7 +9,6 @@ from custom_metrics import weighted_binary_crossentropy
 from architectures import GapModel, NERModel
 from skill_normalizer import normalize_skills
 
-# Standarisasi Penamaan
 SKILL_ALIASES = {
     "ai": "artificial intelligence",
     "c": "c/c++",
@@ -45,15 +44,11 @@ def get_standard_skill(skill_name: str) -> str:
     clean_name = skill_name.lower().strip()
     return SKILL_ALIASES.get(clean_name, clean_name)
 
-# SETUP PATHS
-#BASE_DIR = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine'
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 ARTIFACTS_DIR = os.path.join(BASE_DIR, 'data')
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
 
-# LOAD ARTIFACTS
 try:
-    # Artifacts Gap & Scoring
     with open(os.path.join(ARTIFACTS_DIR, 'skill_binarizer.pkl'), 'rb') as f:
         skill_binarizer = pickle.load(f)
     with open(os.path.join(ARTIFACTS_DIR, 'job_encoder.pkl'), 'rb') as f:
@@ -68,7 +63,6 @@ except FileNotFoundError as e:
     SKILL_VOCAB = np.array([])
 
 try:
-    # Artifacts NER
     with open(os.path.join(ARTIFACTS_DIR, 'ner_tokenizer.pkl'), 'rb') as f:
         ner_tokenizer = pickle.load(f)
     with open(os.path.join(ARTIFACTS_DIR, 'dataset-metadata.json'), 'r') as f:
@@ -80,7 +74,6 @@ except FileNotFoundError as e:
     metadata = {}
     MAX_LEN = 256
 
-# LOAD MODELS
 try:
     NER_MODEL = tf.keras.models.load_model(
         os.path.join(MODELS_DIR, 'ner_model.keras'), 
@@ -92,68 +85,73 @@ except Exception as e:
 
 try:
     GAP_MODEL = tf.keras.models.load_model(
-        os.path.join(MODELS_DIR, 'gap_model.keras'), 
-        custom_objects={'loss': weighted_binary_crossentropy, 'GapModel': GapModel}
+        os.path.join(MODELS_DIR, 'gap_model.keras'),
+        custom_objects={'GapModel': GapModel},
+        compile=False  # inference only, skip optimizer/loss deserialization
     )
+    print("GapModel loaded successfully from gap_model.keras")
 except Exception as e:
     print(f"Warning: GapModel not loaded. ({e})")
     GAP_MODEL = None
 
 
-# EKSTRAKSI SKILL DARI TEKS MENTAH
 def extract_skills(cv_text: str) -> list:
     if not NER_MODEL or not ner_tokenizer:
-        print("Warning: Menggunakan Fallback Keyword Matching karena NER Model tidak ditemukan.")
-        # Fallback: Naive keyword matching
+        print("Warning: fallback to keyword matching (NER unavailable)")
         fallback_skills = []
+        cv_lower = cv_text.lower()
         if len(SKILL_VOCAB) > 0:
-            # Cari skill dari SKILL_VOCAB yang text-nya muncul di CV
-            cv_lower = cv_text.lower()
             for skill in SKILL_VOCAB:
-                if skill.lower() in cv_lower:
-                    fallback_skills.append(skill)
+                pattern = r"\b" + re.escape(skill.lower()) + r"\b"
+                if re.search(pattern, cv_lower):
+                    fallback_skills.append(skill.lower().strip())
         else:
-            # Hardcode fallback jika SKILL_VOCAB juga kosong
             fallback_skills = ["python", "sql", "react", "git", "docker"]
         return fallback_skills
 
-    # Pecah teks jadi token
     tokens = re.findall(r"[\w']+|[.,!?;]", cv_text)
     if not tokens:
         return []
 
-    # Sequencing & Padding
     seq = ner_tokenizer.texts_to_sequences([tokens])[0]
     padded_seq = pad_sequences([seq], maxlen=MAX_LEN, padding='post', truncating='post')
 
-            # Prediksi BIO Tags
-            pred = NER_MODEL.predict(padded_seq, verbose=0)
-            pred_tags = np.argmax(pred, axis=-1)[0]
+    # Rule-based extraction runs alongside NER as a complement
+    rule_based_skills = []
+    cv_lower = cv_text.lower()
+    if len(SKILL_VOCAB) > 0:
+        for skill in SKILL_VOCAB:
+            pattern = r"\b" + re.escape(skill.lower()) + r"\b"
+            if re.search(pattern, cv_lower):
+                rule_based_skills.append(skill.lower().strip())
 
-            # Decoding Tags ke Teks
-            current_skill = []
-            for word, tag in zip(tokens, pred_tags[:len(tokens)]):
-                if tag == 1: # B-SKILL
-                    if current_skill:
-                        ner_skills.append(" ".join(current_skill).lower())
-                    current_skill = [word]
-                elif tag == 2: # I-SKILL
-                    if current_skill:
-                        current_skill.append(word)
-                else: # O
-                    if current_skill:
-                        ner_skills.append(" ".join(current_skill).lower())
-                        current_skill = []
-                        
+    ner_skills = []
+
+    pred = NER_MODEL.predict(padded_seq, verbose=0)
+    pred_tags = np.argmax(pred, axis=-1)[0]
+
+    # Decode BIO tags back to skill spans
+    current_skill = []
+    for word, tag in zip(tokens, pred_tags[:len(tokens)]):
+        if tag == 1:  # B-SKILL
             if current_skill:
                 ner_skills.append(" ".join(current_skill).lower())
+            current_skill = [word]
+        elif tag == 2:  # I-SKILL
+            if current_skill:
+                current_skill.append(word)
+        else:  # O
+            if current_skill:
+                ner_skills.append(" ".join(current_skill).lower())
+                current_skill = []
+                
+    if current_skill:
+        ner_skills.append(" ".join(current_skill).lower())
 
-    # 3. GABUNGKAN & HAPUS DUPLIKAT
     extracted_skills = list(set(rule_based_skills + ner_skills))
     return extracted_skills
 
 
-# ANALISIS GAP & SCORING
 def analyze_cv(skills: list, profession: str) -> dict:
     if not skills or len(skills) == 0:
         return {
@@ -166,26 +164,26 @@ def analyze_cv(skills: list, profession: str) -> dict:
     if not knowledge_base or job_encoder is None:
         return {"error": "Artifacts not loaded."}
         
-    # Validasi profesi
     if profession not in job_encoder.classes_:
         return {"error": f"Profesi '{profession}' tidak ditemukan dalam sistem."}
 
-    # Normalize user skills
-    user_skills_canon = set(normalize_skills(skills, list(SKILL_VOCAB)))
-    required_canon = set(knowledge_base.get(profession, []))
+    skills_cleaned = {s.lower().strip() for s in skills}
+    required_raw = knowledge_base.get(profession, [])
+    required_cleaned = {s.lower().strip() for s in required_raw}
 
-    # Terapkan SKILL_ALIASES ke set skill
-    user_skills_aliased = {get_standard_skill(s) for s in user_skills_canon}
-    required_aliased = {get_standard_skill(s) for s in required_canon}
+    # Normalize aliases before matching
+    user_skills_aliased = {get_standard_skill(s) for s in skills_cleaned}
+    required_aliased = {get_standard_skill(s) for s in required_cleaned}
+    
+    print("Extracted Skills:", list(skills_cleaned))
+    print("Required Skills for Profession:", list(required_cleaned))
 
-    # Untuk input model Keras
-    known_user = {s for s in user_skills_canon if s in SKILL_VOCAB}
-    known_req = {s for s in required_canon if s in SKILL_VOCAB}
-
-    # Matched skills
     matched = sorted(user_skills_aliased & required_aliased)
+    print("Matched Skills:", matched)
 
-    # Scoring
+    known_user = {s for s in user_skills_aliased if s in SKILL_VOCAB}
+    known_req = {s for s in required_aliased if s in SKILL_VOCAB}
+
     critical, important, supplementary = [], [], []
     total_weight_required = 0.0
     user_acquired_weight = 0.0
@@ -196,12 +194,19 @@ def analyze_cv(skills: list, profession: str) -> dict:
 
     if GAP_MODEL:
         prof_id = job_encoder.transform([profession])[0]
-
         pred_probs = GAP_MODEL.predict(np.array([prof_id]), verbose=0)[0]
 
+        # Deduplicate aliased skills by keeping the max probability
+        aliased_probs = {}
         for i, prob in enumerate(pred_probs):
-            skill_name = SKILL_VOCAB[i]
+            raw_skill_name = SKILL_VOCAB[i]
+            aliased_skill = get_standard_skill(raw_skill_name)
+            if aliased_skill in aliased_probs:
+                aliased_probs[aliased_skill] = max(aliased_probs[aliased_skill], prob)
+            else:
+                aliased_probs[aliased_skill] = prob
 
+        for aliased_skill, prob in aliased_probs.items():
             if prob >= 0.8:
                 weight = WEIGHT_CRITICAL
                 target_gap_list = critical
@@ -212,22 +217,31 @@ def analyze_cv(skills: list, profession: str) -> dict:
                 weight = WEIGHT_SUPPLEMENTARY
                 target_gap_list = supplementary
             else:
-                continue # Skip
+                continue
 
             total_weight_required += weight
 
-            if skill_name in known_user:
+            if aliased_skill in user_skills_aliased:
                 user_acquired_weight += weight
             else:
-                target_gap_list.append(skill_name)
+                target_gap_list.append(aliased_skill)
         
         score_ratio = (user_acquired_weight / total_weight_required) if total_weight_required > 0 else 0.0
     else:
-        score_ratio = 0.0
+        # Fallback: pure math scoring without AI model
+        missing_skills = sorted(required_aliased - user_skills_aliased)
+        important = missing_skills
+        
+        if len(required_aliased) > 0:
+            score_ratio = len(matched) / len(required_aliased)
+        else:
+            score_ratio = 0.0
+        print(f"Fallback scoring: {len(matched)}/{len(required_aliased)} = {score_ratio:.2%}")
 
     final_score_percentage = round(score_ratio * 100, 2)
 
     return {
+        "score": score_ratio,
         "score_percentage": final_score_percentage,
         "matched_skills": matched,
         "gap": {
@@ -241,13 +255,11 @@ if __name__ == "__main__":
     cv_mentah = "Saya seorang mahasiswa yang mahir menggunakan Python, React, dan SQL untuk web development. Saya juga pernah menggunakan Git dan Docker."
     target_pekerjaan = "Data Analyst"
     
-    print(f"TEST RUN")
     print(f"Profesi Target : {target_pekerjaan}")
-    print(f"Teks CV Asli   : '{cv_mentah}'\n")
+    print(f"Teks CV        : '{cv_mentah}'\n")
     
     extracted = extract_skills(cv_mentah)
-    print(f"Ekstraksi NER Model: {extracted}\n")
+    print(f"Extracted skills: {extracted}\n")
     
-    print(f"Hasil Analisis Akhir (JSON):")
     hasil_analisis = analyze_cv(extracted, target_pekerjaan)
     print(json.dumps(hasil_analisis, indent=4))

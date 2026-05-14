@@ -9,11 +9,15 @@ ENV/
 __pycache__/
 *.py[cod]
 
-# Data & Models (Jangan push file gede!)
+# Data & Models
 ai_engine/data/
+ai_engine/src/app.py
 ai_engine/models/*.h5
 data_science/raw_data/
 data_science/clean_data/
+
+# Keras Tuner Logs
+ai_engine/tuning/
 
 # WandB logs
 wandb/
