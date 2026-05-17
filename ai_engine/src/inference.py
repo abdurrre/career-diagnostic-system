@@ -55,11 +55,14 @@ try:
         job_encoder = pickle.load(f)
     with open(os.path.join(ARTIFACTS_DIR, 'knowledge_base.json')) as f:
         knowledge_base = json.load(f)
+    with open(os.path.join(ARTIFACTS_DIR, 'role_skill_mapping.json')) as f:
+        role_skill_mapping = json.load(f)
     SKILL_VOCAB = np.array(skill_binarizer.classes_)
 except FileNotFoundError as e:
-    print(f"Warning: Artifacts Gap/Scoring not found. {e}")
+    print(f"Artifacts Gap/Scoring not found. {e}")
     skill_binarizer, job_encoder = None, None
     knowledge_base = {}
+    role_skill_mapping = {}
     SKILL_VOCAB = np.array([])
 
 try:
@@ -80,24 +83,24 @@ try:
         custom_objects={'NERModel': NERModel}
     )
 except Exception as e:
-    print(f"Warning: NER_MODEL not loaded. ({e})")
+    print(f"NER_MODEL not loaded. ({e})")
     NER_MODEL = None
 
 try:
     GAP_MODEL = tf.keras.models.load_model(
         os.path.join(MODELS_DIR, 'gap_model.keras'),
         custom_objects={'GapModel': GapModel},
-        compile=False  # inference only, skip optimizer/loss deserialization
+        compile=False 
     )
     print("GapModel loaded successfully from gap_model.keras")
 except Exception as e:
-    print(f"Warning: GapModel not loaded. ({e})")
+    print(f"GapModel not loaded. ({e})")
     GAP_MODEL = None
 
 
 def extract_skills(cv_text: str) -> list:
     if not NER_MODEL or not ner_tokenizer:
-        print("Warning: fallback to keyword matching (NER unavailable)")
+        print("fallback to keyword matching (NER unavailable)")
         fallback_skills = []
         cv_lower = cv_text.lower()
         if len(SKILL_VOCAB) > 0:
@@ -148,7 +151,7 @@ def extract_skills(cv_text: str) -> list:
     if current_skill:
         ner_skills.append(" ".join(current_skill).lower())
 
-    extracted_skills = list(set(rule_based_skills + ner_skills))
+    extracted_skills = sorted(list(set(rule_based_skills + ner_skills)))
     return extracted_skills
 
 
@@ -206,29 +209,69 @@ def analyze_cv(skills: list, profession: str) -> dict:
             else:
                 aliased_probs[aliased_skill] = prob
 
+        role_kb_raw = role_skill_mapping.get(profession, [])
+        role_kb_aliased = {get_standard_skill(s) for s in role_kb_raw}
+
+        cand_critical = []
+        cand_important = []
+        cand_supp = []
+
         for aliased_skill, prob in aliased_probs.items():
-            if prob >= 0.8:
-                weight = WEIGHT_CRITICAL
-                target_gap_list = critical
-            elif prob >= 0.4:
-                weight = WEIGHT_IMPORTANT
-                target_gap_list = important
-            elif prob >= 0.2:
-                weight = WEIGHT_SUPPLEMENTARY
-                target_gap_list = supplementary
-            else:
+            # filter predicted skills based on the top-n knowledge base mapping
+            if role_kb_aliased and aliased_skill not in role_kb_aliased:
                 continue
 
-            total_weight_required += weight
+            if prob >= 0.8:
+                cand_critical.append((aliased_skill, prob))
+            elif prob >= 0.4:
+                cand_important.append((aliased_skill, prob))
+            elif prob >= 0.2:
+                cand_supp.append((aliased_skill, prob))
 
-            if aliased_skill in user_skills_aliased:
-                user_acquired_weight += weight
+        # sort and cap predicted skill recommendations by confidence
+        cand_critical.sort(key=lambda x: x[1], reverse=True)
+        cand_important.sort(key=lambda x: x[1], reverse=True)
+        cand_supp.sort(key=lambda x: x[1], reverse=True)
+
+        cand_critical = cand_critical[:15]
+        cand_important = cand_important[:15]
+        cand_supp = cand_supp[:10]
+
+        # separate acquired skills from gap categories
+        for skill, prob in cand_critical:
+            if skill in user_skills_aliased:
+                matched.append(skill)
             else:
-                target_gap_list.append(aliased_skill)
+                critical.append(skill)
+                
+        for skill, prob in cand_important:
+            if skill in user_skills_aliased:
+                matched.append(skill)
+            else:
+                important.append(skill)
+                
+        for skill, prob in cand_supp:
+            if skill in user_skills_aliased:
+                matched.append(skill)
+            else:
+                supplementary.append(skill)
+
+        # calculate dynamic weighted scoring based on importance levels
+        user_matched_critical = [s for s, p in cand_critical if s in user_skills_aliased]
+        user_matched_important = [s for s, p in cand_important if s in user_skills_aliased]
+        user_matched_supp = [s for s, p in cand_supp if s in user_skills_aliased]
+
+        user_points = (len(user_matched_critical) * WEIGHT_CRITICAL) + (len(user_matched_important) * WEIGHT_IMPORTANT) + (len(user_matched_supp) * WEIGHT_SUPPLEMENTARY)
         
-        score_ratio = (user_acquired_weight / total_weight_required) if total_weight_required > 0 else 0.0
+        # normalize score against a standard target threshold of 40 points
+        TARGET_POINTS = 40.0
+        
+        score_ratio = user_points / TARGET_POINTS
+        if score_ratio > 1.0:
+            score_ratio = 1.0
+
     else:
-        # Fallback: pure math scoring without AI model
+        # fallback rule-based math scoring when the gap model is not available
         missing_skills = sorted(required_aliased - user_skills_aliased)
         important = missing_skills
         
@@ -239,6 +282,12 @@ def analyze_cv(skills: list, profession: str) -> dict:
         print(f"Fallback scoring: {len(matched)}/{len(required_aliased)} = {score_ratio:.2%}")
 
     final_score_percentage = round(score_ratio * 100, 2)
+
+    # remove duplicates and sort alphabetically for consistent display
+    matched = sorted(list(set(matched)))
+    critical = sorted(list(set(critical)))
+    important = sorted(list(set(important)))
+    supplementary = sorted(list(set(supplementary)))
 
     return {
         "score": score_ratio,
