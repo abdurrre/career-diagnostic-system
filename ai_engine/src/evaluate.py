@@ -26,10 +26,9 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
 
 JSONL_PATH = os.path.join(DATA_DIR, 'dataset_ner_skills_bersih.jsonl')
-CSV_PATH = os.path.join(DATA_DIR, 'final_ready_it_jobs (2).csv')
+CSV_PATH = os.path.join(DATA_DIR, 'final_ready_it_jobs.csv')
 
 def load_ner_test_data():
-    """Load NER test data from JSONL dataset."""
     print("\nMemuat dataset pengujian NER Model")
     
     tokenizer_path = os.path.join(DATA_DIR, 'ner_tokenizer.pkl')
@@ -66,7 +65,6 @@ def load_ner_test_data():
     return np.array(X_list), np.array(y_list)
 
 def load_gap_test_data():
-    """Load Gap test data from CSV (same split as train.py)."""
     print("\nMemuat dataset pengujian GAP Model")
     
     try:
@@ -111,7 +109,7 @@ def evaluate_gap_model(model, X_test, y_test):
     
     y_pred = model.predict(X_test, verbose=0)
     
-    # Threshold 0.5 matches BinaryAccuracy used during training
+    # threshold 0.5 matches binaryaccuracy used during training
     y_pred_bin = (y_pred >= 0.5).astype(int)
     
     acc = accuracy_score(y_test.flatten(), y_pred_bin.flatten())

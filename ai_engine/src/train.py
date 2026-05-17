@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from preprocess import clean_job_title
+from preprocess import standardize_category
 import wandb
 from tracker import init_wandb, ElitePerformanceTracker
 from wandb.integration.keras import WandbMetricsLogger
@@ -26,10 +26,10 @@ def load_artifacts(data_dir):
 
 def prepare_gap_data(csv_path, job_encoder, skill_binarizer):
     df = pd.read_csv(csv_path)
-    df['job_title'] = df['job_title'].apply(clean_job_title)
-    df = df[df['job_title'] != 'DROP'].reset_index(drop=True)
+    df['job_category'] = df['job_category'].apply(standardize_category)
+    df = df[df['job_category'] != 'DROP'].reset_index(drop=True)
     
-    X = job_encoder.transform(df['job_title'])
+    X = job_encoder.transform(df['job_category'])
     df['skill_list'] = df['cleaned_skills'].apply(lambda x: [s.strip() for s in str(x).split(',')])
     y = skill_binarizer.transform(df['skill_list'])
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -38,7 +38,7 @@ def prepare_gap_data(csv_path, job_encoder, skill_binarizer):
 def run_training():
     BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     DATA_DIR = os.path.join(BASE_DIR, 'data')
-    CSV_PATH = os.path.join(DATA_DIR, 'final_ready_it_jobs (2).csv')
+    CSV_PATH = os.path.join(DATA_DIR, 'final_ready_it_jobs.csv')
 
     metadata, job_encoder, skill_binarizer = load_artifacts(DATA_DIR)
     X_train, X_val, y_train, y_val = prepare_gap_data(CSV_PATH, job_encoder, skill_binarizer)
