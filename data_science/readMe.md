@@ -1,5 +1,4 @@
-# file datasetnya ada di folder dataset
-
+# penjelasan isi notebook
 ### 1. `Data_augmented_part_1.ipynb`
 * **Tujuan:** Melakukan integrasi awal antara dataset utama (*Data Science Job Postings & Skills 2024*) dengan data hasil *web scraping* platform Jobstreet Indonesia.
 * **Proses:** Melakukan pembersihan teks (*text cleaning*), standardisasi kolom, penentuan fungsionalitas penargetan profesi, serta filtrasi murni untuk 7 profesi IT target.
@@ -13,6 +12,7 @@
   * Melakukan sinkronisasi indeks data yang lompat menggunakan fungsi `.reset_index(drop=True)`.
 * **Hasil Akhir:** Berhasil mengunci dataset final yang bersih, murni (tanpa kolom duplikat `Unnamed: 0`), dan siap latih (*MLOps Ready*) pada angka **8.644 baris data unik organik**.
 **Data_augmented_part_2.ipynb menghasilkan file dataset Bismillah_fix_dataset.csv** yang digunakan untuk training model
+
 
 # link-link dataset
 - https://www.kaggle.com/datasets/asaniczka/data-science-job-postings-and-skills (main dataset) + scrapping web jobstreet path (dataset/dataset_jobstreet.csv)
