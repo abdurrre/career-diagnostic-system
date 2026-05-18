@@ -14,4 +14,8 @@
 * **Hasil Akhir:** Berhasil mengunci dataset final yang bersih, murni (tanpa kolom duplikat `Unnamed: 0`), dan siap latih (*MLOps Ready*) pada angka **8.644 baris data unik organik**.
 **Data_augmented_part_2.ipynb menghasilkan file dataset Bismillah_fix_dataset.csv** yang digunakan untuk training model
 
+# link-link dataset
+- https://www.kaggle.com/datasets/asaniczka/data-science-job-postings-and-skills (main dataset) + scrapping web jobstreet path (dataset/dataset_jobstreet.csv)
+- https://www.kaggle.com/datasets/adityarajsrv/job-descriptions-2025-tech-and-non-tech-roles (support dataset)
+- https://www.kaggle.com/datasets/asaniczka/software-engineer-job-postings-linkedin?select=postings.csv (support dataset)
 
