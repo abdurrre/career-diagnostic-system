@@ -9,12 +9,6 @@
 ### knowledge_base_skills.csv
 merupakan output utama dari proses EDA dan digunakan sebagai knowledge base sistem. File ini menjadi penghubung antara hasil analisis Data Scientist dengan proses scoring yang dikembangkan oleh AI Engineer. (opsional di gunakan oleh AI engineer (klo sudah ada))
 
-Isi file terdiri dari beberapa informasi utama:
-- **job_category**	(Nama profesi atau role)
-- **skill**	(Nama skill)
-- **frequency**	(Jumlah kemunculan skill pada job posting role terkait)
-- **rank_in_role**	(Ranking skill berdasarkan frekuensi kemunculan)
-- **tier**	(Tingkat prioritas skill)
 
 # link-link public dataset
 - https://www.kaggle.com/datasets/asaniczka/data-science-job-postings-and-skills (main dataset) + scrapping web jobstreet path (dataset/dataset_jobstreet.csv)
