@@ -11,3 +11,5 @@ Selain itu dilakukan sinkronisasi indeks dan pembersihan akhir dataset.
 Hasil akhirnya adalah dataset final **Bismillah_fix_dataset.csv** yang berisi 8.644 data unik organik dan **sudah siap digunakan** untuk training model NLP.
 
 ## EDA
+Pada tahap EDA, dataset final bismillah_fix_dataset.csv dianalisis untuk menjawab **enam business questions** yang sudah ditentukan sebelumnya. 
+Sebelum proses analisis dilakukan, setiap job title terlebih dahulu dipetakan ke dalam **7 kategori profesi** menggunakan pendekatan rule-based keyword matching. Pendekatan ini dipilih karena dataset belum memiliki label kategori bawaan, sehingga proses mapping dilakukan berdasarkan pola keyword yang paling sering muncul pada job title di data.
