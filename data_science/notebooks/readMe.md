@@ -9,3 +9,5 @@ Notebook ini dibuat untuk **mengatasi class imbalance dari Part 1** dengan menam
 Selain itu dilakukan sinkronisasi indeks dan pembersihan akhir dataset.
 
 Hasil akhirnya adalah dataset final **Bismillah_fix_dataset.csv** yang berisi 8.644 data unik organik dan **sudah siap digunakan** untuk training model NLP.
+
+## EDA
