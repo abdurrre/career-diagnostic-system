@@ -6,48 +6,47 @@ import re
 from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 
+# standardize job categories
+CATEGORY_MAP = {
+    'Data Engineer':                'Data Engineer',
+    'Data Analyst':                 'Data Analyst',
+    'Backend Developer':            'Backend Developer',
+    'AI / Machine Learning Engineer': 'AI / Machine Learning Engineer',
+    'Data Scientist':               'Data Scientist',
+    'Fullstack Developer':          'Fullstack Developer',
+    'Frontend Developer':           'Frontend Developer',
+}
+
+def standardize_category(category):
+    """Memetakan nilai kolom job_category ke nama role standar.
+    Mengembalikan 'DROP' jika kategori tidak dikenal."""
+    if not isinstance(category, str):
+        return 'DROP'
+    return CATEGORY_MAP.get(category.strip(), 'DROP')
+
+# backward-compatible wrapper
 def clean_job_title(title):
-    if not isinstance(title, str):
-        return 'DROP'
-    
-    title = title.lower()
-    
-    # Mapping keyword IT secara ketat ke 7 kategori utama
-    if 'data scientist' in title or 'science' in title:
-        return 'Data Scientist'
-    elif 'data analyst' in title or 'analyst' in title:
-        return 'Data Analyst'
-    elif any(k in title for k in ['machine learning', 'mlops', 'ai', 'artificial intelligence']):
-        return 'AI Engineer'
-    elif 'data engineer' in title:
-        return 'Data Engineer'
-    elif 'backend' in title:
-        return 'Backend Developer'
-    elif 'frontend' in title:
-        return 'Frontend Developer'
-    elif 'fullstack' in title or 'full stack' in title:
-        return 'Fullstack Developer'
-    else:
-        return 'DROP'
+    return standardize_category(title)
 
 
 def build_gap_artifacts():
     print("Membangun kamus data untuk Gap Model")
-    csv_path = r'C:\Users\rohman\OneDrive\Documents\KULIAH\SEMESTER 6\MBKM\CAPSTONE PROJECT\career-diagnostic-system\ai_engine\data\final_ready_it_jobs (2).csv'
+    BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    csv_path = os.path.join(BASE, 'data', 'final_ready_it_jobs.csv')
 
-    output_dir = 'ai_engine/data'
+    output_dir = os.path.join(BASE, 'data')
     os.makedirs(output_dir, exist_ok=True)
     
     df = pd.read_csv(csv_path)
     
-    # Cleaning label profesi sebelum di-encode
-    df['job_title'] = df['job_title'].apply(clean_job_title)
+    # use job_category labeled by the ds team
+    df['job_category'] = df['job_category'].apply(standardize_category)
     
-    # Filter hanya kategori yang relevan
-    df = df[df['job_title'] != 'DROP'].reset_index(drop=True)
+    # filter only valid categories
+    df = df[df['job_category'] != 'DROP'].reset_index(drop=True)
     
     job_encoder = LabelEncoder()
-    df['profession_id'] = job_encoder.fit_transform(df['job_title'])
+    df['profession_id'] = job_encoder.fit_transform(df['job_category'])
     
     df['skill_list'] = df['cleaned_skills'].apply(lambda x: [s.strip() for s in str(x).split(',')])
     skill_binarizer = MultiLabelBinarizer()
@@ -56,7 +55,7 @@ def build_gap_artifacts():
     tokenizer = Tokenizer(oov_token="<OOV>")
     tokenizer.fit_on_texts(df['cleaned_skills'].astype(str))
     
-    # Simpan Metadata Gap Model
+    # save gap model metadata
     metadata = {
         "vocab_size": len(tokenizer.word_index) + 1,
         "num_professions": len(job_encoder.classes_),
@@ -85,8 +84,9 @@ def build_gap_artifacts():
 
 def build_ner_artifacts():
     print("\nMembangun kamus data untuk NER Model")
-    jsonl_path = r'C:\Users\rohman\OneDrive\Documents\KULIAH\SEMESTER 6\MBKM\CAPSTONE PROJECT\career-diagnostic-system\ai_engine\data\dataset_ner_skills_bersih.jsonl'
-    output_dir = 'ai_engine/data'
+    BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    jsonl_path = os.path.join(BASE, 'data', 'dataset_ner_skills_bersih.jsonl')
+    output_dir = os.path.join(BASE, 'data')
     
     if not os.path.exists(jsonl_path):
         print(f"File {jsonl_path} tidak ditemukan")
@@ -95,7 +95,7 @@ def build_ner_artifacts():
     all_cv_texts = []
     max_len = 0
     
-    # Ekstrak data dari JSONL
+    # extract data from jsonl
     with open(jsonl_path, 'r', encoding='utf-8') as f:
         for line in f:
             data = json.loads(line)
@@ -105,15 +105,15 @@ def build_ner_artifacts():
             if len(tokens) > max_len:
                 max_len = len(tokens)
                 
-    # Bikin Tokenizer KHUSUS NER
+    # instantiate ner tokenizer
     ner_tokenizer = Tokenizer(oov_token="<OOV>")
     ner_tokenizer.fit_on_texts(all_cv_texts)
     
-    # Simpan NER Tokenizer biar nanti bisa dipake pas Inference
+    # save ner tokenizer for inference
     with open(os.path.join(output_dir, 'ner_tokenizer.pkl'), 'wb') as f:
         pickle.dump(ner_tokenizer, f)
         
-    # Update Metadata dengan info NER
+    # update metadata with ner information
     metadata_path = os.path.join(output_dir, 'dataset-metadata.json')
     if os.path.exists(metadata_path):
         with open(metadata_path, 'r') as f:

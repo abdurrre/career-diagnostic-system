@@ -9,10 +9,11 @@ import wandb
 from tracker import init_wandb
 from wandb.integration.keras import WandbMetricsLogger
 
-ARTIFACTS_DIR = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine/data'
-JSONL_PATH = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine/data/dataset_ner_skills_bersih.jsonl'
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+ARTIFACTS_DIR = os.path.join(BASE_DIR, 'data')
+JSONL_PATH = os.path.join(BASE_DIR, 'data', 'dataset_ner_skills_bersih.jsonl')
 
-MAX_LEN = 256  # Batasan untuk mengatasi CV yang terlalu panjang
+MAX_LEN = 256  # cap token length to handle long cv texts
 BATCH_SIZE = 32
 EPOCHS = 30    
 
@@ -33,7 +34,7 @@ def data_generator():
             tokens = data.get("tokens", [])
             tags = data.get("ner_tags", [])
 
-            # Ubah kata (string) menjadi angka
+            # convert tokens to sequences
             seq = tokenizer.texts_to_sequences([tokens])[0]
 
             seq = seq[:MAX_LEN]
@@ -44,20 +45,20 @@ def data_generator():
 
             yield seq_padded, tags_padded
 
-# Merakit tf.data.Dataset Pipeline
+# build tf.data.dataset pipeline
 print("tf.data.Dataset")
 train_dataset = tf.data.Dataset.from_generator(
     data_generator,
     output_signature=(
-        tf.TensorSpec(shape=(MAX_LEN,), dtype=tf.int32), # Input: X (Tokens)
-        tf.TensorSpec(shape=(MAX_LEN,), dtype=tf.int32)  # Output: y (BIO Tags)
+        tf.TensorSpec(shape=(MAX_LEN,), dtype=tf.int32), # input: X (tokens)
+        tf.TensorSpec(shape=(MAX_LEN,), dtype=tf.int32)  # output: y (BIO tags)
     )
 )
 
-# Optimasi Pipeline
+# optimize dataset pipeline
 train_dataset = train_dataset.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
-# Inisialisasi Model dan Mulai Training
+# initialize model and start training
 print("Inisialisasi Arsitektur NER")
 from architectures import NERModel
 
@@ -68,7 +69,6 @@ model = NERModel(
     num_classes=NUM_CLASSES
 )
 
-# Compile model
 model.compile(
     optimizer='adam',
     loss='sparse_categorical_crossentropy',
@@ -77,7 +77,8 @@ model.compile(
 
 if __name__ == "__main__":
     
-    model_save_path = '/content/drive/MyDrive/semester 6/MBKM/Project Capstone/career-diagnostic-system/ai_engine/models/ner_model.keras'
+    os.makedirs(os.path.join(BASE_DIR, 'models'), exist_ok=True)
+    model_save_path = os.path.join(BASE_DIR, 'models', 'ner_model.keras')
     
     init_wandb(
         project_name="career-diagnostic-system",
@@ -93,7 +94,7 @@ if __name__ == "__main__":
         }
     )
 
-    # Early Stopping
+    # early stopping callback
     early_stopping = EarlyStopping(
         monitor='loss', 
         patience=3, 
@@ -101,7 +102,7 @@ if __name__ == "__main__":
         verbose=1
     )
 
-    # Model Checkpoint
+    # checkpoint callback
     model_checkpoint = ModelCheckpoint(
         filepath=model_save_path,
         monitor='loss',
