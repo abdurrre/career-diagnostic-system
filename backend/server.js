@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // routing
 app.use("/api/auth", authRoutes);
-app.use("/api/profession", professionRoutes);
+app.use("/api/professions", professionRoutes);
 app.use("/api/analysis", analysisRoutes);
 
 // fallback route

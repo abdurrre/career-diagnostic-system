@@ -40,7 +40,7 @@ exports.scanCV = async (req, res) => {
     */
 
     const newHistory = await History.create({
-      score: final_score,
+      score: parseFloat(final_score) || 0.00,
       id_profession,
       id_user,
     });

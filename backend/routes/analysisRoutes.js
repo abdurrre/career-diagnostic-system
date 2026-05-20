@@ -5,3 +5,5 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/scan", authMiddleware, analysisController.scanCV);
 router.get("/history", authMiddleware, analysisController.getUserHistories);
+
+module.exports = router;
