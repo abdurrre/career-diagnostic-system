@@ -4,26 +4,23 @@ const User = require("./userModel");
 const Verification = require("./verificationModel");
 const Profession = require("./professionModel");
 const Skill = require("./skillModel");
-const ProfessionSkill = require("./professionSkill");
 const History = require("./historyModel");
+const ProfessionSkill = require("./professionSkill");
 const HistorySkill = require("./historySkill");
 
-// users <-> verifications
+// Users <-> Verifications
 User.hasMany(Verification, { foreignKey: "id_user", onDelete: "CASCADE" });
 Verification.belongsTo(User, { foreignKey: "id_user" });
 
-// users <-> histories
+// Users <-> Histories
 User.hasMany(History, { foreignKey: "id_user", onDelete: "CASCADE" });
 History.belongsTo(User, { foreignKey: "id_user" });
 
-// professions <-> histories
-Profession.hasMany(History, {
-  foreignKey: "id_profession",
-  onDelete: "RESTRICT",
-});
+// Professions <-> Histories
+Profession.hasMany(History, { foreignKey: "id_profession", onDelete: "RESTRICT" });
 History.belongsTo(Profession, { foreignKey: "id_profession" });
 
-// professions <-> skills
+// Professions <-> Skills (Many-to-Many lewat ProfessionSkill)
 Profession.belongsToMany(Skill, {
   through: ProfessionSkill,
   foreignKey: "id_profession",
@@ -35,8 +32,8 @@ Skill.belongsToMany(Profession, {
   onDelete: "CASCADE",
 });
 
-// histories <-> skills
-HistorySkill.belongsToMany(Skill, {
+// Histories <-> Skills (Many-to-Many lewat HistorySkill)
+History.belongsToMany(Skill, {
   through: HistorySkill,
   foreignKey: "id_history",
   onDelete: "CASCADE",

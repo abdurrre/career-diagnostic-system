@@ -5,7 +5,7 @@ const Profession = sequelize.define(
   "Profession",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.VARCHAR(100), allowNull: false },
+    name: { type: DataTypes.STRING(100), allowNull: false },
     description: { type: DataTypes.TEXT, allowNull: true },
   },
   {
