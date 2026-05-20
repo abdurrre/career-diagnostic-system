@@ -8,7 +8,7 @@ exports.scanCV = async (req, res) => {
     const id_user = req.user.id;
 
     const profession = await Profession.findByPk(id_profession, {
-      include: { model: skill },
+      include: { model: Skill },
     });
     if (!profession)
       return res
@@ -83,7 +83,7 @@ exports.getUserHistories = async (req, res) => {
         { model: Profession, attributes: ["name"] },
         { model: Skill, through: { attributes: ["status"] } },
       ],
-      order: [["created_at"], "DESC"],
+      order: [["created_at", "DESC"]],
     });
     res.json(histories);
   } catch (error) {
