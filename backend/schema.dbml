@@ -1,0 +1,77 @@
+// ==========================================
+// DEFINISI TABEL & CONSTRAINT
+// ==========================================
+
+// 1. Tabel Users (Kredensial dan Status Akun)
+Table Users {
+  id int [pk, increment]
+  email varchar(255) [unique, not null]
+  password varchar(255) [not null] // Panjang 255 aman untuk hasil hash (bcrypt/argon2)
+  status enum('inactive', 'active') [not null, default: 'inactive']
+}
+
+// 2. Tabel Verifications (Token Aktivasi Akun)
+Table Verifications {
+  id int [pk, increment]
+  token varchar(255) [not null]
+  expires_at timestamp [not null]
+  id_user int [not null]
+}
+
+// 3. Tabel Professions (Master Data Profesi)
+Table Professions {
+  id int [pk, increment]
+  name varchar(100) [not null]
+  description text [note: 'Boleh kosong jika tidak ada detail awal']
+}
+
+// 4. Tabel Skills (Master Data Kompetensi/Skill)
+Table Skills {
+  id int [pk, increment]
+  name varchar(100) [not null]
+  description text
+}
+
+// 5. Tabel Pivot: Profession_Skills (Standar Kompetensi Tiap Profesi)
+Table Profession_Skills {
+  id int [pk, increment]
+  id_profession int [not null]
+  id_skill int [not null]
+}
+
+// 6. Tabel Histories (Hasil Utama Perhitungan Scan CV)
+Table Histories {
+  id int [pk, increment]
+  score decimal(5,2) [not null, note: 'Mengakomodasi nilai desimal persentase, contoh: 87.50']
+  id_profession int [not null]
+  id_user int [not null]
+}
+
+// 7. Tabel Pivot: History_Skills (Detail Pemetaan Match & Gap Hasil Scan)
+Table History_Skills {
+  id int [pk, increment]
+  status enum('match', 'gap') [not null, note: 'Mengunci data agar terhindar dari typo saat insert hasil analisa']
+  id_history int [not null]
+  id_skill int [not null]
+}
+
+// ==========================================
+// DEFINISI RELASI (FOREIGN KEYS)
+// ==========================================
+
+// Relasi Users -> Verifications (One-to-Many)
+Ref: Users.id < Verifications.id_user [delete: cascade]
+
+// Relasi Users -> Histories (One-to-Many)
+Ref: Users.id < Histories.id_user [delete: cascade]
+
+// Relasi Professions -> Histories (One-to-Many)
+Ref: Professions.id < Histories.id_profession [delete: restrict]
+
+// Relasi Banyak-ke-Banyak (Many-to-Many) lewat Profession_Skills
+Ref: Professions.id < Profession_Skills.id_profession [delete: cascade]
+Ref: Skills.id < Profession_Skills.id_skill [delete: cascade]
+
+// Relasi Banyak-ke-Banyak (Many-to-Many) lewat History_Skills
+Ref: Histories.id < History_Skills.id_history [delete: cascade]
+Ref: Skills.id < History_Skills.id_skill [delete: restrict]
