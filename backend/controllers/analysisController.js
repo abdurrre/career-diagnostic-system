@@ -1,46 +1,74 @@
 const { History, Skill, HistorySkill, Profession } = require("../models/index");
 const axios = require("axios");
+const pdfParse = require("pdf-parse");
 require("dotenv").config();
 
+// scan cv tanpa login
 exports.scanCV = async (req, res) => {
   try {
-    const { id_profession, raw_text_input } = req.body;
-    const id_user = req.user.id;
+    const { profession_name, additional_text } = req.body;
 
-    const profession = await Profession.findByPk(id_profession, {
-      include: { model: Skill },
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "File CV berbentuk PDF wajib diupload" });
+    }
+
+    const profession = await Profession.findOne({
+      where: { name: profession_name },
     });
-    if (!profession)
+
+    if (!profession) {
       return res
         .status(404)
-        .json({ message: "Profesi target tidak ditemukan" });
+        .json({ message: `Profesi ${profession_name} tidak ditemukan` });
+    }
 
-    // Kirim data teks CV dan target profesi ke Service Python (AI)
-    // Sesuaikan payload body-nya dengan format yang diminta oleh tim AI
+    // ekstraksi teks pdf
+    let pdfText = "";
+    try {
+      const pdfData = await pdfParse(req.file.buffer);
+      pdfText = pdfData.text;
+    } catch (pdfError) {
+      return res.status(422).json({ message: "Gagal membaca file PDF" });
+    }
+
+    const finalRawTextInput = `${pdfText}\n\nKonteks Tambahan\n${additional_text} || ""`;
+
     let aiResponse;
     try {
       aiResponse = await axios.post(process.env.AI_SERVICE_URL, {
-        profession_name: profession.name,
-        text_input: raw_text_input,
+        profession_name,
+        text_input: finalRawTextInput,
       });
     } catch (aiError) {
-      console.error("Error dari AI Service", aiError.message);
       return res.status(502).json({
-        message: "Gagal mendapatkan respon dari model AI Engine",
+        message: "Gagal mendapatkan respon dari AI Engine",
         error: aiError.message,
       });
     }
 
     const { final_score, skill_analysis } = aiResponse.data;
-    /* Contoh struktur 'skill_analysis' yang diharapkan dari Python:
-      [
-        { name: "Python", status: "match" },
-        { name: "Docker", status: "gap" }
-      ]
-    */
+
+    res.status(200).json({
+      message: "Analisis CV berhasil diproses",
+      score: final_score,
+      analysis: skill_analysis,
+      id_profession: profession.id,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// simpan history
+exports.saveHistory = async (req, res) => {
+  try {
+    const { score, id_profession, skill_analysis } = req.body;
+    const id_user = req.user.id;
 
     const newHistory = await History.create({
-      score: parseFloat(final_score) || 0.00,
+      score: parseFloat(score) || 0.0,
       id_profession,
       id_user,
     });
@@ -64,16 +92,15 @@ exports.scanCV = async (req, res) => {
     }
 
     res.status(201).json({
-      message: "Analisis CV berhasil diproses dan disimpan",
+      message: "History berhasil disimpan",
       historyId: newHistory.id,
-      score: final_score,
-      analysis: skill_analysis,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+// ambil history user
 exports.getUserHistories = async (req, res) => {
   try {
     const id_user = req.user.id;
