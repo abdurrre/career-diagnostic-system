@@ -33,7 +33,7 @@ exports.scanCV = async (req, res) => {
       return res.status(422).json({ message: "Gagal membaca file PDF" });
     }
 
-    const finalRawTextInput = `${pdfText}\n\nKonteks Tambahan\n${additional_text} || ""`;
+    const finalRawTextInput = `${pdfText}\n\nKonteks Tambahan\n${additional_text || ""}`;
 
     let aiResponse;
     try {
@@ -76,6 +76,12 @@ exports.saveHistory = async (req, res) => {
     const historySkillData = [];
 
     for (const item of skill_analysis) {
+      if (!skill_analysis || !Array.isArray(skill_analysis)) {
+        return res
+          .status(400)
+          .json({ message: "Data analisis skill tidak valid" });
+      }
+
       const skillData = await Skill.findOne({ where: { name: item.name } });
 
       if (skillData) {
