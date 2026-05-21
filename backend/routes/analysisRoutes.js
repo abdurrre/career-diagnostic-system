@@ -14,13 +14,21 @@ const upload = multer({
       cb(new Error("Hanya file PDF yang diperbolehkan!"), false);
     }
   },
-});
+}).single("cv_file");
 
-router.post(
-  "/scan",
-  upload.single("cv_file"),
-  analysisController.scanCV,
-);
+const uploadMiddleware = (req, res, next) => {
+  upload(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({
+        message: "Gagal mengupload file",
+        error: err.message,
+      });
+    }
+    next();
+  });
+};
+
+router.post("/scan", uploadMiddleware, analysisController.scanCV);
 
 router.post("/save", authMiddleware, analysisController.saveHistory);
 
