@@ -23,3 +23,15 @@ exports.getProfessionSkills = async (req, res) => {
     res.status(500).json({error: error.message});
   }
 };
+
+exports.createProfession = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    if (!name) return res.status(400).json({ message: "Nama profesi wajib diisi" });
+
+    const newProfession = await Profession.create({ name, description });
+    res.status(201).json(newProfession);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
