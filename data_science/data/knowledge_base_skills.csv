@@ -1,0 +1,71 @@
+job_category,skill,frequency,rank_in_role,tier
+Data Engineer,sql,1663,1,Critical
+Data Engineer,python,1555,2,Critical
+Data Engineer,aws,1105,3,Critical
+Data Engineer,spark,998,4,Important
+Data Engineer,agile,929,5,Important
+Data Engineer,azure,878,6,Important
+Data Engineer,etl,863,7,Supplementary
+Data Engineer,java,776,8,Supplementary
+Data Engineer,data modeling,702,9,Supplementary
+Data Engineer,hadoop,700,10,Supplementary
+Data Analyst,sql,1277,1,Critical
+Data Analyst,python,887,2,Critical
+Data Analyst,tableau,792,3,Critical
+Data Analyst,excel,642,4,Important
+Data Analyst,power bi,561,5,Important
+Data Analyst,machine learning,303,6,Important
+Data Analyst,data modeling,285,7,Supplementary
+Data Analyst,etl,268,8,Supplementary
+Data Analyst,agile,235,9,Supplementary
+Data Analyst,sql server,149,10,Supplementary
+Backend Developer,python,494,1,Critical
+Backend Developer,java,444,2,Critical
+Backend Developer,aws,340,3,Critical
+Backend Developer,git,295,4,Important
+Backend Developer,sql,292,5,Important
+Backend Developer,kubernetes,267,6,Important
+Backend Developer,agile,264,7,Supplementary
+Backend Developer,javascript,250,8,Supplementary
+Backend Developer,docker,246,9,Supplementary
+Backend Developer,c++,200,10,Supplementary
+AI / Machine Learning Engineer,machine learning,909,1,Critical
+AI / Machine Learning Engineer,python,718,2,Critical
+AI / Machine Learning Engineer,tensorflow,480,3,Critical
+AI / Machine Learning Engineer,deep learning,440,4,Important
+AI / Machine Learning Engineer,pytorch,424,5,Important
+AI / Machine Learning Engineer,aws,341,6,Important
+AI / Machine Learning Engineer,ai,305,7,Supplementary
+AI / Machine Learning Engineer,agile,297,8,Supplementary
+AI / Machine Learning Engineer,azure,277,9,Supplementary
+AI / Machine Learning Engineer,nlp,212,10,Supplementary
+Data Scientist,python,815,1,Critical
+Data Scientist,machine learning,764,2,Critical
+Data Scientist,sql,585,3,Critical
+Data Scientist,spark,238,4,Important
+Data Scientist,aws,227,5,Important
+Data Scientist,tableau,225,6,Important
+Data Scientist,artificial intelligence,188,7,Supplementary
+Data Scientist,ai,161,8,Supplementary
+Data Scientist,tensorflow,156,9,Supplementary
+Data Scientist,hadoop,153,10,Supplementary
+Fullstack Developer,javascript,522,1,Critical
+Fullstack Developer,aws,491,2,Critical
+Fullstack Developer,python,482,3,Critical
+Fullstack Developer,typescript,426,4,Important
+Fullstack Developer,java,410,5,Important
+Fullstack Developer,sql,410,6,Important
+Fullstack Developer,agile,317,7,Supplementary
+Fullstack Developer,react,311,8,Supplementary
+Fullstack Developer,go,288,9,Supplementary
+Fullstack Developer,docker,252,10,Supplementary
+Frontend Developer,javascript,220,1,Critical
+Frontend Developer,react,171,2,Critical
+Frontend Developer,css,135,3,Critical
+Frontend Developer,html,126,4,Important
+Frontend Developer,typescript,116,5,Important
+Frontend Developer,git,91,6,Important
+Frontend Developer,angular,85,7,Supplementary
+Frontend Developer,agile,72,8,Supplementary
+Frontend Developer,aws,67,9,Supplementary
+Frontend Developer,frontend development,54,10,Supplementary
