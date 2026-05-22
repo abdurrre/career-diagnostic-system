@@ -31,9 +31,9 @@ def predict(req: PredictionRequest):
         return {
             "status": "success",
             "ner_extracted_skills": ner_skills,
-            "gap_analysis": analysis["gap"], # ada critical, important, supplementary
-            "matched_skills": analysis["matched_skills"],
-            "score_percentage": analysis["score_percentage"]
+            "gap_analysis": analysis.get("gap", {}),
+            "matched_skills": analysis.get("matched_skills", []),
+            "score_percentage": analysis.get("score_percentage", 0)
         }
 
     except HTTPException as e:
