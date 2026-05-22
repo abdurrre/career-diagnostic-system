@@ -55,15 +55,19 @@ try:
         job_encoder = pickle.load(f)
     with open(os.path.join(ARTIFACTS_DIR, 'knowledge_base.json')) as f:
         knowledge_base = json.load(f)
-    with open(os.path.join(ARTIFACTS_DIR, 'role_skill_mapping.json')) as f:
-        role_skill_mapping = json.load(f)
     SKILL_VOCAB = np.array(skill_binarizer.classes_)
 except FileNotFoundError as e:
     print(f"Artifacts Gap/Scoring not found. {e}")
     skill_binarizer, job_encoder = None, None
     knowledge_base = {}
-    role_skill_mapping = {}
     SKILL_VOCAB = np.array([])
+
+try:
+    with open(os.path.join(ARTIFACTS_DIR, 'role_skill_mapping.json')) as f:
+        role_skill_mapping = json.load(f)
+except FileNotFoundError:
+    # print("Warning: role_skill_mapping.json not found, using knowledge_base instead.")
+    role_skill_mapping = knowledge_base
 
 try:
     with open(os.path.join(ARTIFACTS_DIR, 'ner_tokenizer.pkl'), 'rb') as f:
@@ -151,7 +155,16 @@ def extract_skills(cv_text: str) -> list:
     if current_skill:
         ner_skills.append(" ".join(current_skill).lower())
 
-    extracted_skills = sorted(list(set(rule_based_skills + ner_skills)))
+    raw_extracted = sorted(list(set(rule_based_skills + ner_skills)))
+    
+    # Filter out obvious NER noise (like "seorang mahasiswa yang")
+    extracted_skills = []
+    for skill in raw_extracted:
+        if len(SKILL_VOCAB) > 0 and (skill in SKILL_VOCAB or get_standard_skill(skill) in SKILL_VOCAB):
+            extracted_skills.append(skill)
+        elif len(skill.split()) <= 2: # Keep unknown skills if they are short (1-2 words max)
+            extracted_skills.append(skill)
+            
     return extracted_skills
 
 
