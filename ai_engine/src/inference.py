@@ -10,39 +10,68 @@ from architectures import GapModel, NERModel
 from skill_normalizer import normalize_skills
 
 SKILL_ALIASES = {
-    "ai": "artificial intelligence",
+    # AI / ML
+    "artificial intelligence": "ai",
+    "artificial intelligence (ai)": "ai",
+    "ai/ml": "ai",
+    
+    # Cloud Services
+    "amazon web services": "aws",
+    "amazon web services (aws)": "aws",
+    "google cloud platform": "gcp",
+    "google cloud": "gcp",
+    
+    # NLP / CV
+    "natural language processing": "nlp",
+    "cv": "computer vision",
+    
+    # Languages & Frameworks
+    "js": "javascript",
+    "ts": "typescript",
+    "ml": "machine learning",
+    "dl": "deep learning",
+    "k8s": "kubernetes",
+    "html5": "html",
+    "css3": "css",
+    "postgres": "postgresql",
+    "torch": "pytorch",
+    "tf": "tensorflow",
+    
+    # C/C++
     "c": "c/c++",
     "c++": "c/c++",
-    "aws": "amazon web services",
-    "js": "javascript",
+    
+    # Frontend / UI / UX
     "react js": "react",
     "react.js": "react",
+    "reactjs": "react",
     "node js": "node.js",
     "nodejs": "node.js",
     "vue js": "vue.js",
     "vuejs": "vue.js",
-    "ts": "typescript",
-    "ml": "machine learning",
-    "dl": "deep learning",
-    "nlp": "natural language processing",
-    "cv": "computer vision",
-    "gcp": "google cloud platform",
-    "k8s": "kubernetes",
-    "html5": "html",
-    "css3": "css",
-    "postgresql": "postgres",
-    "db": "database",
     "ui": "ui/ux",
     "ux": "ui/ux",
+    "ux/ui": "ui/ux",
     "ui/ux design": "ui/ux",
     "rn": "react native",
-    "tf": "tensorflow",
-    "pytorch": "torch"
+    
+    # Databases & others
+    "database": "db",
 }
 
 def get_standard_skill(skill_name: str) -> str:
     clean_name = skill_name.lower().strip()
     return SKILL_ALIASES.get(clean_name, clean_name)
+
+def resolve_profession(profession: str) -> str:
+    """Case-insensitive matching terhadap daftar profesi yang dikenal sistem."""
+    if job_encoder is None:
+        return profession
+    profession_stripped = profession.strip()
+    for cls in job_encoder.classes_:
+        if cls.lower() == profession_stripped.lower():
+            return cls
+    return profession_stripped
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 ARTIFACTS_DIR = os.path.join(BASE_DIR, 'data')
@@ -173,13 +202,17 @@ def analyze_cv(skills: list, profession: str) -> dict:
         return {
             "score": 0.0,
             "matched_skills": [],
+            "matched_categories": {},
             "gap": {"critical": [], "important": [], "supplementary": []},
             "error": "Tidak ada skill relevan yang terdeteksi di CV."
         }
 
     if not knowledge_base or job_encoder is None:
         return {"error": "Artifacts not loaded."}
-        
+
+    # Case-insensitive profession resolution
+    profession = resolve_profession(profession)
+
     if profession not in job_encoder.classes_:
         return {"error": f"Profesi '{profession}' tidak ditemukan dalam sistem."}
 
@@ -201,6 +234,7 @@ def analyze_cv(skills: list, profession: str) -> dict:
     known_req = {s for s in required_aliased if s in SKILL_VOCAB}
 
     critical, important, supplementary = [], [], []
+    matched_categories = {}  # track category for each matched skill
     total_weight_required = 0.0
     user_acquired_weight = 0.0
 
@@ -254,18 +288,23 @@ def analyze_cv(skills: list, profession: str) -> dict:
         for skill, prob in cand_critical:
             if skill in user_skills_aliased:
                 matched.append(skill)
+                matched_categories[skill] = "critical"
             else:
                 critical.append(skill)
                 
         for skill, prob in cand_important:
             if skill in user_skills_aliased:
                 matched.append(skill)
+                if skill not in matched_categories:
+                    matched_categories[skill] = "important"
             else:
                 important.append(skill)
                 
         for skill, prob in cand_supp:
             if skill in user_skills_aliased:
                 matched.append(skill)
+                if skill not in matched_categories:
+                    matched_categories[skill] = "supplementary"
             else:
                 supplementary.append(skill)
 
@@ -282,6 +321,48 @@ def analyze_cv(skills: list, profession: str) -> dict:
         score_ratio = user_points / TARGET_POINTS
         if score_ratio > 1.0:
             score_ratio = 1.0
+
+        # FALLBACK: Jika model menghasilkan prediksi kosong (semua prob < 0.2),
+        # gunakan Knowledge Base (role_skill_mapping) untuk mengisi gap berdasarkan rank.
+        total_model_candidates = len(cand_critical) + len(cand_important) + len(cand_supp)
+        if total_model_candidates == 0:
+            print("WARNING: Model predictions all below threshold. Falling back to KB-based gap.")
+            role_kb_raw = role_skill_mapping.get(profession, [])
+            role_kb_list = [get_standard_skill(s) for s in role_kb_raw]
+            # Deduplicate sambil menjaga urutan
+            seen = set()
+            role_kb_unique = []
+            for s in role_kb_list:
+                if s not in seen:
+                    seen.add(s)
+                    role_kb_unique.append(s)
+
+            total_kb = len(role_kb_unique)
+            cutoff_critical = int(total_kb * 0.20)     # Top 20%
+            cutoff_important = int(total_kb * 0.50)    # Next 30%
+
+            for idx, skill in enumerate(role_kb_unique):
+                if skill in user_skills_aliased:
+                    matched.append(skill)
+                    if idx < cutoff_critical:
+                        matched_categories[skill] = "critical"
+                    elif idx < cutoff_important:
+                        matched_categories.setdefault(skill, "important")
+                    else:
+                        matched_categories.setdefault(skill, "supplementary")
+                else:
+                    if idx < cutoff_critical:
+                        critical.append(skill)
+                    elif idx < cutoff_important:
+                        important.append(skill)
+                    else:
+                        supplementary.append(skill)
+
+            # Hitung skor berdasarkan jumlah skill yang cocok terhadap total KB
+            if total_kb > 0:
+                score_ratio = len([s for s in role_kb_unique if s in user_skills_aliased]) / total_kb
+            else:
+                score_ratio = 0.0
 
     else:
         # fallback rule-based math scoring when the gap model is not available
@@ -306,6 +387,7 @@ def analyze_cv(skills: list, profession: str) -> dict:
         "score": score_ratio,
         "score_percentage": final_score_percentage,
         "matched_skills": matched,
+        "matched_categories": matched_categories,
         "gap": {
             "critical": critical,
             "important": important,
