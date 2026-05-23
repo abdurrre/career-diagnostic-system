@@ -34,7 +34,9 @@ const HistorySkill = sequelize.define(
   {
     tableName: "history_skills",
     timestamps: true,
-    underscored: true
+    underscored: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   },
 );
 
