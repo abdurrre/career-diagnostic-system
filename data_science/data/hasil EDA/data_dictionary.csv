@@ -1,0 +1,26 @@
+Dataset,Kolom,Tipe,Deskripsi
+df1 – job_postings.csv (Kaggle),job_link,string,"URL unik job posting LinkedIn, foreign key join dengan df2"
+df1,job_title,string,Judul pekerjaan sesuai posting LinkedIn
+df1,job_level,string,Level pengalaman (Entry/Mid/Senior/Executive)
+df1,job_type,string,Tipe pekerjaan (Full-time/Part-time/Contract/Remote)
+df1,search_country,string,Negara asal pencarian — dataset ini bersifat global
+df2 – job_skills.csv (Kaggle),job_link,string,Foreign key untuk join dengan df1
+df2,job_skills,string,Raw string skill dari deskripsi job posting LinkedIn
+df3 – dataset_jobstreet.csv,Judul_Pekerjaan,string,Judul pekerjaan dari Jobstreet Indonesia
+df3,Kualifikasi_Keterampilan,string,Skill yang dibutuhkan (format teks bebas dari Jobstreet)
+df3,Gaji,string,Rentang gaji yang ditawarkan (banyak nilai kosong)
+df4 – Job Desc 2025 (Kaggle),job_title,string,Judul pekerjaan — dataset augmentasi untuk developer roles
+df4,job_skills,string,Skill dari deskripsi job — dipakai untuk Backend/Frontend/Fullstack
+df5 – LinkedIn SWE Jobs (Kaggle),job_title,string,Judul pekerjaan — dataset augmentasi software engineering
+df5,job_skills,string,Skill dari posting software engineering LinkedIn
+bismillah_fix_dataset.csv (FINAL),job_title,string,Judul pekerjaan — hasil gabungan 4 dataset sumber
+bismillah_fix_dataset.csv (FINAL),job_skills,string,Raw skill string sebelum ekstraksi
+bismillah_fix_dataset.csv (FINAL),cleaned_skills,string,"Skill bersih hasil ekstraksi dari master_skills_list, format CSV string"
+bismillah_fix_dataset.csv (FINAL),job_category,string,Kategori profesi hasil rule-based keyword mapping dari job_title (7 kategori)
+(EDA derived),skill_count,integer,Jumlah skill per job posting — dihitung dari cleaned_skills
+(EDA derived),source,string,Sumber data: Global (LinkedIn/Kaggle) atau Indonesia (Jobstreet)
+knowledge_base_skills.csv (OUTPUT),job_category,string,Nama kategori profesi
+knowledge_base_skills.csv (OUTPUT),skill,string,Nama skill
+knowledge_base_skills.csv (OUTPUT),frequency,integer,Jumlah kemunculan skill di job posting untuk role tersebut
+knowledge_base_skills.csv (OUTPUT),rank_in_role,integer,Peringkat skill berdasarkan frekuensi dalam role
+knowledge_base_skills.csv (OUTPUT),tier,string,"Tingkat urgensi: Critical (rank 1-3), Important (4-6), Supplementary (7-10)"
