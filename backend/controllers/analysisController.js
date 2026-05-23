@@ -55,10 +55,14 @@ exports.scanCV = async (req, res) => {
 
     const mockFinalScore = 85.50;
     const mockSkillAnalysis = [
-      { name: "React", status: "match" },
-      { name: "Node.js", status: "match" },
-      { name: "Docker", status: "gap" },
-      { name: "Tailwind CSS", status: "match" }
+      { name: "Python", status: "match" },
+      { name: "SQL", status: "match" },
+      { name: "Data Visualization", status: "match" },
+      { name: "Machine Learning Basics", status: "match" },
+      { name: "Pandas", status: "match" },
+      { name: "Communication", status: "gap" },
+      { name: "Project Management", status: "gap" },
+      { name: "Agile Methodologies", status: "gap" },
     ];
 
     res.status(200).json({

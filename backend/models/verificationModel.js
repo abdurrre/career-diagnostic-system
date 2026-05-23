@@ -20,7 +20,8 @@ const Verification = sequelize.define(
   },
   {
     tableName: "verifications",
-    timestamps: false
+    timestamps: true,
+    underscored: true
   }
 );
 

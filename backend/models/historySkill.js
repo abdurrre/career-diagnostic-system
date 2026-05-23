@@ -29,7 +29,8 @@ const HistorySkill = sequelize.define(
   },
   {
     tableName: "history_skills",
-    timestamps: false
+    timestamps: true,
+    underscored: true
   },
 );
 

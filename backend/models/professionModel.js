@@ -20,7 +20,8 @@ const Profession = sequelize.define(
   },
   {
     tableName: "professions",
-    timestamps: false
+    timestamps: true,
+    underscored: true
   },
 );
 
