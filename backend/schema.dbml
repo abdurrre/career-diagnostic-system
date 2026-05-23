@@ -37,6 +37,7 @@ Table Profession_Skills {
   id int [pk, increment]
   id_profession int [not null]
   id_skill int [not null]
+  category enum('critical', 'important', 'supplementary') [not null]
 }
 
 // 6. Tabel Histories (Hasil Utama Perhitungan Scan CV)
