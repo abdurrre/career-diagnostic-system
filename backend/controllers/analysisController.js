@@ -142,7 +142,7 @@ exports.scanCV = async (req, res) => {
       profession_name: profession.name,
       score: mockFinalScore,
       // score: final_score, -> tunggu service ai
-      analysis: mockSkillAnalysis,
+      skill_analysis: mockSkillAnalysis,
       // analysis: skill_analysis, -> tunggu service ai
       id_profession: profession.id,
     });
@@ -218,7 +218,7 @@ exports.getUserHistories = async (req, res) => {
       where: { id_user },
       include: [
         { model: Profession, attributes: ["name"] },
-        { model: Skill, through: { attributes: ["status"] } },
+        { model: Skill, through: { attributes: ["status", "category"] } },
       ],
       order: [["created_at", "DESC"]],
     });
