@@ -16,6 +16,10 @@ const HistorySkill = sequelize.define(
       references: { model: "Skills", key: "id" },
     },
     status: { type: DataTypes.ENUM("match", "gap"), allowNull: false },
+    category: {
+      type: DataTypes.ENUM("critical", "important", "supplementary"),
+      allowNull: true
+    },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
