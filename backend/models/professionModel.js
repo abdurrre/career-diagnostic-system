@@ -20,7 +20,10 @@ const Profession = sequelize.define(
   },
   {
     tableName: "professions",
-    timestamps: false
+    timestamps: true,
+    underscored: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   },
 );
 

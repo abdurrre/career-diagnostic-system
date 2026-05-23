@@ -7,6 +7,7 @@ const Verification = sequelize.define(
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     token: {type: DataTypes.STRING(255), allowNull: false},
     expires_at: {type: DataTypes.DATE, allowNull: false},
+    id_user: {type: DataTypes.INTEGER, allowNull: false},
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -20,7 +21,10 @@ const Verification = sequelize.define(
   },
   {
     tableName: "verifications",
-    timestamps: false
+    timestamps: true,
+    underscored: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 
