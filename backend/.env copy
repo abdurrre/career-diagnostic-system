@@ -1,0 +1,10 @@
+PORT=5000
+DB_HOST=localhost
+DB_USER=
+DB_PASS=
+DB_NAME=
+DB_DIALECT=mysql
+
+JWT_SECRET=rahasia
+
+AI_SERVICE_URL=http://localhost:8000/api/ai/analyze
