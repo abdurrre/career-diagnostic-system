@@ -11,9 +11,6 @@ from inference import extract_skills, analyze_cv
 
 app = FastAPI(title="AI Engine - Career Diagnostic API", version="1.0.0")
 
-# ============================================================
-# Static Mapping: Profession Name -> ID (sesuai database Backend)
-# ============================================================
 PROFESSION_ID_MAP = {
     "AI / Machine Learning Engineer": 4,
     "Backend Developer": 1,
@@ -24,18 +21,10 @@ PROFESSION_ID_MAP = {
     "Fullstack Developer": 3,
 }
 
-
-# ============================================================
-# Request Schema
-# ============================================================
 class DiagnosticRequest(BaseModel):
     raw_text: str           # Gabungan teks CV (PDF) + input teks tambahan dari Frontend
     target_profession: str  # Nama profesi target (harus sesuai dengan kelas di job_encoder)
 
-
-# ============================================================
-# Helper: Bangun list skill_analysis dari hasil inference
-# ============================================================
 def build_skill_analysis(analysis: dict) -> list:
     """
     Menggabungkan matched_skills dan gap_skills menjadi satu list
@@ -43,13 +32,10 @@ def build_skill_analysis(analysis: dict) -> list:
     """
     skill_analysis = []
 
-    # --- 1. Matched Skills (status: "match") ---
     matched_skills = analysis.get("matched_skills", [])
     matched_categories = analysis.get("matched_categories", {})
 
     for skill in matched_skills:
-        # Ambil kategori dari matched_categories (hasil tracking model)
-        # Fallback ke "supplementary" jika skill hanya cocok via Knowledge Base
         category = matched_categories.get(skill, "supplementary")
         skill_analysis.append({
             "name": skill,
@@ -58,7 +44,6 @@ def build_skill_analysis(analysis: dict) -> list:
             "description": ""
         })
 
-    # --- 2. Gap Skills (status: "gap") ---
     gap = analysis.get("gap", {})
 
     for skill in gap.get("critical", []):
@@ -87,13 +72,8 @@ def build_skill_analysis(analysis: dict) -> list:
 
     return skill_analysis
 
-
-# ============================================================
-# Endpoint Utama: POST /api/diagnose
-# ============================================================
 @app.post("/api/diagnose")
 async def diagnose_career(req: DiagnosticRequest):
-    # --- Validasi Input ---
     if not req.raw_text.strip():
         raise HTTPException(status_code=400, detail="Teks CV tidak boleh kosong.")
 
@@ -101,17 +81,13 @@ async def diagnose_career(req: DiagnosticRequest):
         raise HTTPException(status_code=400, detail="Target profesi tidak boleh kosong.")
 
     try:
-        # Poin 3: Ekstraksi skill menggunakan NER Model
         extracted_skills = extract_skills(req.raw_text)
 
-        # Poin 4 & 5: Gap Analysis + Scoring
         analysis = analyze_cv(extracted_skills, req.target_profession)
 
-        # Tangani error dari inference (misal: profesi tidak dikenali)
         if "error" in analysis:
             raise HTTPException(status_code=400, detail=analysis["error"])
 
-        # Poin 6: Bangun response JSON sesuai API Contract Backend
         skill_analysis = build_skill_analysis(analysis)
         id_profession = PROFESSION_ID_MAP.get(req.target_profession, 0)
 
