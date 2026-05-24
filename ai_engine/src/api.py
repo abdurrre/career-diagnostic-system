@@ -95,7 +95,6 @@ def build_skill_analysis(analysis: dict) -> list:
     skill_analysis = []
     seen_skills = set()
 
-    # --- 1. Matched Skills (status: "match") ---
     matched_skills = analysis.get("matched_skills", [])
     matched_categories = analysis.get("matched_categories", {})
 
@@ -115,7 +114,6 @@ def build_skill_analysis(analysis: dict) -> list:
             "description": ""
         })
 
-    # --- 2. Gap Skills (status: "gap") ---
     gap = analysis.get("gap", {})
 
     for cat_name in ["critical", "important", "supplementary"]:
@@ -212,19 +210,13 @@ async def diagnose_career(req: DiagnosticRequest):
         raise HTTPException(status_code=400, detail="Teks CV terlalu panjang (maks 20.000 karakter).")
 
     try:
-        logger.info(f"[{request_id}] /api/diagnose — profession={req.target_profession.value}")
-
-        # Poin 3: Ekstraksi skill menggunakan NER Model
         extracted_skills = extract_skills(req.raw_text)
 
-        # Poin 4 & 5: Gap Analysis + Scoring
-        analysis = analyze_cv(extracted_skills, req.target_profession.value)
+        analysis = analyze_cv(extracted_skills, req.target_profession)
 
-        # Tangani error dari inference (misal: profesi tidak dikenali)
         if "error" in analysis:
             raise HTTPException(status_code=400, detail=analysis["error"])
 
-        # Poin 6: Bangun response JSON sesuai API Contract Backend
         skill_analysis = build_skill_analysis(analysis)
         id_profession = PROFESSION_ID_MAP.get(req.target_profession.value, 0)
 
