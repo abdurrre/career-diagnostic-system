@@ -22,8 +22,8 @@ PROFESSION_ID_MAP = {
 }
 
 class DiagnosticRequest(BaseModel):
-    raw_text: str           # Gabungan teks CV (PDF) + input teks tambahan dari Frontend
-    target_profession: str  # Nama profesi target (harus sesuai dengan kelas di job_encoder)
+    raw_text: str         
+    target_profession: str  
 
 def build_skill_analysis(analysis: dict) -> list:
     """
