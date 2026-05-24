@@ -212,7 +212,7 @@ async def diagnose_career(req: DiagnosticRequest):
     try:
         extracted_skills = extract_skills(req.raw_text)
 
-        analysis = analyze_cv(extracted_skills, req.target_profession)
+        analysis = analyze_cv(extracted_skills, req.target_profession.value)
 
         if "error" in analysis:
             raise HTTPException(status_code=400, detail=analysis["error"])
