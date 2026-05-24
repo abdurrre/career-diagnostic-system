@@ -6,5 +6,6 @@ DB_NAME=
 DB_DIALECT=mysql
 
 JWT_SECRET=rahasia
+GROQ_API_KEY=your-groq-api-key-here
 
 AI_SERVICE_URL=http://localhost:8000/api/ai/analyze

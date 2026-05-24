@@ -7,3 +7,5 @@ keras-tuner
 fastapi
 uvicorn
 pydantic
+groq
+slowapi

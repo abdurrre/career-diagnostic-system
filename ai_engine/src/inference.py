@@ -272,17 +272,19 @@ def analyze_cv(skills: list, profession: str) -> dict:
                 cand_critical.append((aliased_skill, prob))
             elif prob >= 0.4:
                 cand_important.append((aliased_skill, prob))
-            elif prob >= 0.2:
+            else:
                 cand_supp.append((aliased_skill, prob))
 
-        # sort and cap predicted skill recommendations by confidence
+        # Ensure any skills in the profession's knowledge base that are not in the model vocabulary are captured
+        processed_skills = set(aliased_probs.keys())
+        for kb_skill in role_kb_aliased:
+            if kb_skill not in processed_skills:
+                cand_supp.append((kb_skill, 0.0))
+
+        # sort predicted skill recommendations by confidence (no capping limits to show all skills)
         cand_critical.sort(key=lambda x: x[1], reverse=True)
         cand_important.sort(key=lambda x: x[1], reverse=True)
         cand_supp.sort(key=lambda x: x[1], reverse=True)
-
-        cand_critical = cand_critical[:15]
-        cand_important = cand_important[:15]
-        cand_supp = cand_supp[:10]
 
         # separate acquired skills from gap categories
         for skill, prob in cand_critical:
