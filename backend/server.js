@@ -27,7 +27,7 @@ app.use((req, res) => {
 
 // koneksi database
 sequelize
-  .sync({ alter: true })
+  .sync()
   .then(() => {
     console.log("Database terhubung dan tabel berhasil disinkronkan");
     app.listen(PORT, () => {

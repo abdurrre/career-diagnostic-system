@@ -97,6 +97,8 @@ backend/
 ├── middleware/              # Auth middleware (JWT)
 ├── models/                  # Definisi model Sequelize
 ├── routes/                  # Definisi routing Express
+├── scripts/                 # Utility & generator scripts
+│   └── generate_seeder.js   # Script untuk generate seeder dari CSV
 ├── seeders/                 # Data awal (professions, skills, profession_skills)
 ├── .env                     # Environment variables (buat sendiri)
 ├── .sequelizerc             # Konfigurasi path Sequelize CLI
@@ -132,15 +134,43 @@ backend/
 
 ---
 
+## Integrasi Data & Regenerasi Seeder
+
+Aplikasi ini menggunakan data profesi dan skill yang terintegrasi dari tim Data Science (`data_science/data/knowledge_base_skills.csv`). Agar database backend selalu selaras dengan pembaruan dataset, kami menyediakan script generator seeder otomatis.
+
+### Meng-generate Ulang Seeder
+Jika ada pembaruan data pada CSV di folder `data_science`, jalankan perintah berikut untuk meng-generate kembali file seeder `20260523073208-professions-skills.js`:
+
+```bash
+node scripts/generate_seeder.js
+```
+
+Script ini akan otomatis:
+1. Membaca dataset terbaru dari `../data_science/data/knowledge_base_skills.csv`.
+2. Melakukan ekstraksi profesi, skill unik, serta relasi pemetaannya.
+3. Menghasilkan deskripsi otomatis berbahasa Indonesia untuk setiap skill berdasarkan kamus bawaan dan pola nama skill.
+4. Menulis file seeder baru yang siap dieksekusi di `seeders/`.
+
+---
+
 ## Perintah Berguna
 
 ```bash
 # Jalankan dalam mode development (auto-restart)
 npm run dev
 
-# Jalankan seeder
+# Jalankan migration untuk membuat tabel di database
+npx sequelize-cli db:migrate
+
+# Generate file seeder dari CSV Data Science
+node scripts/generate_seeder.js
+
+# Jalankan seeder (mengisi database dengan profesi dan skill)
 npx sequelize-cli db:seed:all
 
-# Undo semua seeder
+# Undo semua seeder yang telah masuk ke database
 npx sequelize-cli db:seed:undo:all
+
+# Undo seeder profesi & skill secara spesifik
+npx sequelize-cli db:seed:undo --seed 20260523073208-professions-skills.js
 ```
