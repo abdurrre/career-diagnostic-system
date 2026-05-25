@@ -1,3 +1,94 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #f4f6ff;
+  --color-brand-100: #e9ecff;
+  --color-brand-200: #d7dbff;
+  --color-brand-300: #b9c1ff;
+  --color-brand-400: #949eff;
+  --color-brand-500: #6d75ff;
+  --color-brand-600: #4f4bf5;
+  --color-brand-700: #3e37df;
+  --color-brand-800: #322cb7;
+  --color-brand-900: #2c2992;
+  --color-brand-950: #1a1854;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+}
+
+@utility premium-card {
+  background-color: white;
+  border-width: 1px;
+  border-color: #f1f5f9;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.02);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+@utility premium-card-hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.04);
+  border-color: rgba(226, 232, 240, 0.8);
+}
+
+@utility premium-input {
+  width: 100%;
+  background-color: white;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  border-radius: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  color: #334155;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+@utility premium-input-focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: #4f4bf5;
+  box-shadow: 0 0 0 4px rgba(79, 75, 245, 0.1);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f7f9ff;
+  color: #1e293b;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Beautiful elegant premium ambient backdrop gradient */
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(244, 100%, 97%, 1) 0px, transparent 45%), 
+    radial-gradient(at 100% 0%, hsla(250, 100%, 97%, 1) 0px, transparent 45%),
+    radial-gradient(at 50% 50%, hsla(230, 100%, 99%, 1) 0px, transparent 70%),
+    radial-gradient(at 50% 100%, hsla(245, 100%, 98%, 1) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-outfit);
+  color: #0f172a;
+  letter-spacing: -0.025em;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background-color: rgba(241, 245, 249, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
