@@ -1,16 +1,51 @@
-# React + Vite
+# 💻 Frontend - Career Diagnostic Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dashboard web interaktif untuk menganalisis keselarasan karier dan memetakan kesenjangan keahlian (*skill gaps*) pengguna secara real-time. Didesain dengan estetika modern kelas premium (*premium aesthetics*) dan antarmuka Bahasa Indonesia yang ramah dan luwes.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🎨 Desain & Estetika Premium
 
-## React Compiler
+Aplikasi klien ini dirancang dengan prinsip desain modern terbaik untuk memukau pengguna saat pertama kali membukanya:
+* **Glassmorphic Cards:** Panel transparan dengan efek blur latar belakang (*backdrop blur*) yang halus.
+* **Non-blocking Cognitive Loading:** Animasi ikon siluet kepala manusia tampak samping yang artistik dengan roda gigi tunggal yang berputar stabil pada poros sumbunya saat data sedang dianalisis oleh AI.
+* **Glow & Pulsing FAB:** Tombol obrolan asisten AI chatbot melayang di pojok kanan bawah dengan efek berdenyut (*pulse*) dan bayangan lembut (*soft glowing shadow*).
+* **Responsive Layout:** Grid layout modern Tailwind CSS yang sepenuhnya responsif di perangkat seluler hingga layar desktop super lebar.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ⚙️ Fitur Utama
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Unggah CV Seret & Lepas (Drag & Drop):** Area pengunggahan berkas yang aman, membatasi format hanya untuk PDF dan membatasi ukuran file maksimal 5MB secara dinamis sebelum dikirim ke server.
+2. **Riwayat Diagnostik Terintegrasi (`HistoryView`):** Halaman riwayat lengkap yang memuat log riwayat langsung dari backend database. Menekan tombol *"Lihat Hasil"* akan memuat seluruh daftar keahlian dan kesenjangan kompetensi asli dari database tanpa ada data kustom yang hilang.
+3. **Pemuatan Laporan Terperinci (`ReportView`):** Dilengkapi dengan ringkasan skor berupa diagram lingkaran SVG interaktif, pesan umpan balik dinamis dengan 5 variasi kalimat per rentang skor, dan kartu kesenjangan keterampilan yang diwarnai berdasarkan prioritas (*tier*).
+4. **Widget AI Chatbot Cerdas (`ChatWidget`):** Kotak obrolan melayang di pojok kanan bawah yang otomatis menyinkronkan data kualifikasi CV Anda sebagai konteks saat mengobrol dengan asisten AI.
+5. **Autentikasi Aman & Banner Kesalahan:** Dilengkapi validasi keamanan login/register serta spanduk peringatan merah dinamis jika terjadi kegagalan jaringan atau server backend sedang luring.
+
+---
+
+## 🚀 Teknologi yang Digunakan
+
+* **Core:** React 18, HTML5, Vanilla JavaScript.
+* **Styling:** Tailwind CSS (dengan kurva warna HSL kustom) & CSS kustom.
+* **Animations:** Framer Motion (untuk transisi halaman dan efek spring).
+* **Icons:** Lucide React (ikon berkualitas tinggi yang minimalis).
+* **Bundler:** Vite (kecepatan kompilasi dan hot reload instan).
+
+---
+
+## 🏃 Cara Menjalankan Aplikasi
+
+1. Pastikan Anda berada di direktori `frontend/`:
+   ```bash
+   cd frontend
+   ```
+2. Instal semua dependensi Node.js:
+   ```bash
+   npm install
+   ```
+3. Jalankan server pengembangan Vite:
+   ```bash
+   npm run dev
+   ```
+4. Buka peramban (*browser*) Anda ke alamat `http://localhost:5173`.

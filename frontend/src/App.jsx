@@ -372,20 +372,12 @@ function App() {
 
     } catch (err) {
       clearInterval(progressInterval);
-      console.log("Vite scanner fail-safe: backend offline or AI config empty. Gracefully loading offline interactive mocks.", err);
+      setIsAnalyzing(false);
+      console.error("Vite scanner error:", err);
       
-      // Fallback
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setAnalysisSuccess(true);
-        setAnalyzedRole(selectedRole);
-        setCurrentView('report');
-        setActiveTab('History');
-        
-        setToastMessage("Pindai CV Berhasil (Mode Demonstrasi Offline)");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3500);
-      }, 300);
+      setToastMessage("Koneksi gagal: Layanan backend tidak berjalan atau terjadi kesalahan internal server.");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 5000);
     }
   };
 
