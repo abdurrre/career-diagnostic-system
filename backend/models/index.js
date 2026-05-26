@@ -1,16 +1,11 @@
 const sequelize = require("../config/database");
 
 const User = require("./userModel");
-const Verification = require("./verificationModel");
 const Profession = require("./professionModel");
 const Skill = require("./skillModel");
 const History = require("./historyModel");
 const ProfessionSkill = require("./professionSkill");
 const HistorySkill = require("./historySkill");
-
-// Users <-> Verifications
-User.hasMany(Verification, { foreignKey: "id_user", onDelete: "CASCADE" });
-Verification.belongsTo(User, { foreignKey: "id_user" });
 
 // Users <-> Histories
 User.hasMany(History, { foreignKey: "id_user", onDelete: "CASCADE" });
@@ -47,7 +42,6 @@ Skill.belongsToMany(History, {
 module.exports = {
   sequelize,
   User,
-  Verification,
   Profession,
   Skill,
   ProfessionSkill,

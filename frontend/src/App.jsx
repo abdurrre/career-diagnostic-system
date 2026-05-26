@@ -8,13 +8,12 @@ import AuthView from './components/AuthView';
 import HomeView from './components/HomeView';
 import ReportView from './components/ReportView';
 import HistoryView from './components/HistoryView';
-import VerificationSuccessView from './components/VerificationSuccessView';
-import VerificationFailedView from './components/VerificationFailedView';
 import AboutView from './components/AboutView';
 import ForgotPasswordView from './components/ForgotPasswordView';
 import ResetPasswordNewView from './components/ResetPasswordNewView';
 import ResetPasswordSuccessView from './components/ResetPasswordSuccessView';
 import NotFoundView from './components/NotFoundView';
+import ChatWidget from './components/ChatWidget';
 import { professions as defaultProfessions, professionsData, defaultProfessionData } from './data/professions';
 import { API_BASE_URL } from './config/api';
 import './App.css';
@@ -505,7 +504,9 @@ function App() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || errorData.message || "Gagal melakukan registrasi akun.");
+        setAuthLoading(false);
+        setAuthError(errorData.error || errorData.message || "Gagal melakukan registrasi akun.");
+        return;
       }
 
       setAuthLoading(false);
@@ -634,20 +635,6 @@ function App() {
           handleTryAnother={handleTryAnother}
         />
 
-        {/* VIEW 5: DYNAMIC VERIFICATION SUCCESS SCREEN */}
-        <VerificationSuccessView
-          currentView={currentView}
-          triggerLoginView={triggerLoginView}
-          handleTryAnother={handleTryAnother}
-        />
-
-        {/* VIEW 6: DYNAMIC VERIFICATION FAILED SCREEN */}
-        <VerificationFailedView
-          currentView={currentView}
-          triggerRegisterView={triggerRegisterView}
-          handleTryAnother={handleTryAnother}
-        />
-
         {/* VIEW 7: MISSION ABOUT SCREEN */}
         <AboutView 
           currentView={currentView}
@@ -702,6 +689,13 @@ function App() {
         showToast={showToast}
         setShowToast={setShowToast}
         toastMessage={toastMessage}
+      />
+
+      {/* FLOATING AI CHAT ASSISTANT WIDGET */}
+      <ChatWidget 
+        analyzedRole={analyzedRole}
+        currentRoleData={currentRoleData}
+        currentView={currentView}
       />
 
     </div>

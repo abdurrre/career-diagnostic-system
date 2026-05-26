@@ -8,6 +8,53 @@ import {
   TrendingUp 
 } from 'lucide-react';
 
+const getFeedbackMessage = (score) => {
+  const s = Math.round(score);
+  const index = s % 5;
+  
+  if (s >= 0 && s <= 20) {
+    return [
+      "Profil CV Anda saat ini memiliki kecocokan yang sangat minim dengan standar industri. Diperlukan peningkatan keahlian fundamental yang signifikan.",
+      "Masih terdapat kesenjangan besar antara kualifikasi Anda dan kebutuhan peran. Fokus pada pengembangan kompetensi dasar terlebih dahulu.",
+      "Penyelarasan CV Anda berada pada tingkat awal. Kami menyarankan untuk mengambil sertifikasi dasar dan melengkapi keahlian inti yang wajib dimiliki.",
+      "Tingkat kecocokan sangat rendah. Mulailah membangun portofolio dasar dan pelajari keterampilan teknis mendasar dari peran ini.",
+      "CV Anda memerlukan perombakan besar untuk peran ini. Prioritaskan penguasaan modul dasar sebelum melamar posisi ini."
+    ][index];
+  } else if (s >= 21 && s <= 40) {
+    return [
+      "Kualifikasi Anda mulai menunjukkan kecocokan dasar, namun Anda perlu membangun fondasi keahlian teknis yang lebih solid.",
+      "Anda memiliki beberapa keahlian dasar, tetapi kesenjangan utama masih menghambat daya saing profil Anda di industri.",
+      "Penyelarasan profil berada di tingkat pemula. Fokuslah meningkatkan keterampilan prioritas untuk memperbesar peluang Anda lolos seleksi.",
+      "Profil CV Anda telah mendeteksi beberapa kata kunci penting, namun kompetensi praktis inti masih perlu ditingkatkan secara menyeluruh.",
+      "Langkah awal yang baik, tetapi profil Anda membutuhkan peningkatan keahlian tambahan untuk memenuhi ekspektasi minimal perekrut."
+    ][index];
+  } else if (s >= 41 && s <= 60) {
+    return [
+      "CV Anda memiliki kecocokan menengah. Dengan menambahkan beberapa kompetensi kunci yang hilang, profil Anda akan jauh lebih kompetitif.",
+      "Kualifikasi Anda sudah mencakup sebagian besar kebutuhan dasar. Mengatasi celah keahlian penting akan sangat meningkatkan peluang Anda.",
+      "Anda memiliki modal dasar yang cukup baik. Fokuslah mempelajari teknologi pendukung untuk memperkuat relevansi profil CV Anda.",
+      "Relevansi profil Anda berada di tingkat moderat. Sedikit pemolesan pada portofolio dan keahlian spesifik akan membuat Anda lebih menonjol.",
+      "Kompetensi Anda menunjukkan potensi yang baik. Menjembatani kesenjangan keahlian tingkat menengah akan memperkuat kesiapan kerja Anda."
+    ][index];
+  } else if (s >= 61 && s <= 80) {
+    return [
+      "Profil CV Anda sangat kuat dan memiliki keselarasan yang baik. Menambal sisa kesenjangan kecil akan menjadikan Anda kandidat unggulan.",
+      "Anda memiliki kecocokan fondasi yang matang untuk peran ini. Tambahkan detail proyek praktis untuk menyempurnakan portofolio Anda.",
+      "Kualifikasi Anda telah memenuhi mayoritas kriteria perekrut. Optimalkan keahlian pelengkap Anda untuk memenangkan persaingan kerja.",
+      "Tingkat keselarasan CV Anda tinggi. Fokus pada penguasaan alat pendukung agar profil Anda terlihat sangat solid dan siap pakai.",
+      "CV Anda menunjukkan potensi tinggi. Sedikit peningkatan pada keterampilan spesifik akan langsung menarik perhatian tim rekrutmen."
+    ][index];
+  } else {
+    return [
+      "Luar biasa! Profil CV Anda sangat selaras dengan standar industri terbaik. Anda adalah kandidat yang sangat ideal untuk peran ini.",
+      "Kualifikasi Anda hampir sempurna dan memenuhi ekspektasi tertinggi perekrut. Anda sudah siap untuk segera melamar posisi ini!",
+      "CV Anda menunjukkan penguasaan keahlian yang komprehensif dan mendalam. Pertahankan portofolio ini untuk menaklukkan proses wawancara.",
+      "Profil Anda memiliki kecocokan yang sangat istimewa. Anda siap bersaing di level tertinggi industri untuk memperebutkan peran ini.",
+      "Keselarasan yang luar biasa solid. Kompetensi utama dan pelengkap Anda telah terpenuhi dengan sangat baik untuk standar tahun 2026."
+    ][index];
+  }
+};
+
 export default function ReportView({
   currentView,
   analyzedRole,
@@ -34,17 +81,17 @@ export default function ReportView({
           {/* Analysis Complete Badge */}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 border border-indigo-100/60 text-xs font-bold text-brand-600 uppercase tracking-wider">
             <ListChecks className="w-3.5 h-3.5" />
-            Analysis Complete
+            Analisis Selesai
           </div>
           
           {/* Dynamic H1 Header */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            {analyzedRole} Profile Match
+            Kecocokan Profil {analyzedRole}
           </h1>
           
           {/* Dynamically bound descriptive subtitle */}
           <p className="text-sm sm:text-base text-slate-500 font-sans max-w-2xl">
-            Based on your provided CV and the industry standard requirements for a <strong>{analyzedRole}</strong> role in 2026.
+            Berdasarkan CV yang Anda unggah dan persyaratan standar industri untuk peran <strong>{analyzedRole}</strong> saat ini.
           </p>
         </div>
 
@@ -55,7 +102,7 @@ export default function ReportView({
             className="px-6 py-3 rounded-full border border-slate-200/80 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 font-bold text-sm shadow-sm transition-all flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />
-            Try Another Profession
+            Coba Profesi Lain
           </button>
           
           <button 
@@ -63,7 +110,7 @@ export default function ReportView({
             className="px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center gap-2"
           >
             <Bookmark className="w-4 h-4" />
-            Save Results
+            Simpan Hasil
           </button>
         </div>
       </div>
@@ -74,7 +121,7 @@ export default function ReportView({
         {/* LEFT CARD: Match Score Percentage */}
         <div className="lg:col-span-4 premium-card border-l-4 border-l-brand-600 p-8 flex flex-col justify-between text-center space-y-6">
           <div>
-            <h3 className="text-lg font-bold font-outfit text-slate-800">Match Score</h3>
+            <h3 className="text-lg font-bold font-outfit text-slate-800">Skor Kecocokan</h3>
           </div>
 
           {/* Animated SVG Circular Progress Graph */}
@@ -106,14 +153,14 @@ export default function ReportView({
                 {currentRoleData.matchScore}%
               </span>
               <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">
-                Alignment
+                Kesesuaian
               </span>
             </div>
           </div>
 
           <div className="px-2">
             <p className="text-sm text-slate-500 font-sans leading-relaxed">
-              You possess a strong foundational match. Addressing critical gaps will significantly elevate your candidacy.
+              {getFeedbackMessage(currentRoleData.matchScore)}
             </p>
           </div>
         </div>
@@ -126,8 +173,8 @@ export default function ReportView({
               <CheckCircle2 className="w-5.5 h-5.5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold font-outfit text-slate-800">Identified Skills</h3>
-              <p className="text-xs text-slate-400 font-sans">Capabilities recognized from your profile</p>
+              <h3 className="text-lg font-bold font-outfit text-slate-800">Keahlian Teridentifikasi</h3>
+              <p className="text-xs text-slate-400 font-sans">Kompetensi yang berhasil dikenali dari profil Anda</p>
             </div>
           </div>
 
@@ -151,7 +198,7 @@ export default function ReportView({
 
           <div className="bg-slate-50 rounded-xl p-4 text-xs text-slate-400 font-sans flex items-center gap-2">
             <Award className="w-4 h-4 text-brand-500 flex-shrink-0" />
-            <span>These capabilities directly map to positive indicators on enterprise recruiters' automated tracking filters.</span>
+            <span>Keahlian ini terpetakan langsung sebagai indikator positif pada sistem pemindaian rekrutmen perusahaan.</span>
           </div>
         </div>
 
@@ -166,9 +213,9 @@ export default function ReportView({
           </div>
           <div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 font-outfit">
-              Target Skill Gaps
+              Kesenjangan Keahlian Target
             </h2>
-            <p className="text-xs text-slate-400 font-sans mt-0.5">Prioritized areas for immediate development</p>
+            <p className="text-xs text-slate-400 font-sans mt-0.5">Area prioritas untuk pengembangan karier segera</p>
           </div>
         </div>
 

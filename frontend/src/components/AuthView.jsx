@@ -83,8 +83,8 @@ export default function AuthView({
                 <User className="w-4.5 h-4.5" />
               </div>
               <div>
-                <h5 className="font-bold font-outfit text-xs text-white">Robert Greene</h5>
-                <p className="text-[10px] text-slate-300 font-sans mt-0.5">American Author and Strategist</p>
+                <h5 className="font-bold font-outfit text-xs !text-white">Robert Greene</h5>
+                <p className="text-[10px] !text-slate-300 font-sans mt-0.5">American Author and Strategist</p>
               </div>
             </div>
           </motion.div>
@@ -106,12 +106,12 @@ export default function AuthView({
           {/* 1. Welcomes Title Block */}
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl font-bold font-outfit text-slate-900 tracking-tight">
-              {currentView === 'login' ? 'Welcome back' : 'Create Account'}
+              {currentView === 'login' ? 'Selamat Datang' : 'Buat Akun'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 font-sans leading-relaxed">
               {currentView === 'login' 
-                ? 'Sign in to access your personalized skill pathways.' 
-                : 'Register to begin diagnostics and map your skill progression.'}
+                ? 'Masuk untuk mengakses peta jalan keahlian khusus Anda.' 
+                : 'Daftar untuk memulai diagnosis dan memetakan perkembangan keahlian Anda.'}
             </p>
           </div>
 
@@ -123,14 +123,14 @@ export default function AuthView({
             {/* Email Address Input */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-700 font-outfit tracking-wide block">
-                Email Address
+                Alamat Email
               </label>
               <div className="relative">
                 <input
                   type="email"
                   value={authEmail}
                   onChange={(e) => setAuthEmail(e.target.value)}
-                  placeholder="you@company.com"
+                  placeholder="anda@perusahaan.com"
                   className="premium-input pl-11 text-sm font-sans"
                   required
                 />
@@ -144,7 +144,7 @@ export default function AuthView({
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <label className="text-xs font-bold text-slate-700 font-outfit tracking-wide block">
-                  Password
+                  Kata Sandi
                 </label>
                 {currentView === 'login' && (
                   <button 
@@ -152,7 +152,7 @@ export default function AuthView({
                     onClick={() => setCurrentView('forgot-password')}
                     className="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline cursor-pointer"
                   >
-                    Forgot password?
+                    Lupa kata sandi?
                   </button>
                 )}
               </div>
@@ -179,7 +179,7 @@ export default function AuthView({
                 className="space-y-2"
               >
                 <label className="text-xs font-bold text-slate-700 font-outfit tracking-wide block">
-                  Confirm Password
+                  Konfirmasi Kata Sandi
                 </label>
                 <div className="relative">
                   <input
@@ -223,19 +223,19 @@ export default function AuthView({
                 {authLoading ? (
                   <>
                     <Loader2 className="w-4.5 h-4.5 animate-spin" />
-                    <span>Processing...</span>
+                    <span>Memproses...</span>
                   </>
                 ) : currentView === 'login' ? (
                   <>
-                    <span>Sign In</span>
+                    <span>Masuk</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 ) : (
-                  <span>Send Email Verification</span>
+                  <span>Buat Akun</span>
                 )}
               </button>
 
-              {/* Dynamic Email Sent Notification (Register Only) */}
+              {/* Dynamic Successful Registration Notification (Register Only) */}
               <AnimatePresence>
                 {currentView === 'register' && registerSuccess && (
                   <motion.div 
@@ -248,29 +248,8 @@ export default function AuthView({
                     <div className="space-y-1 w-full">
                       <h5 className="font-bold font-outfit text-emerald-950 text-xs sm:text-sm">Registrasi Berhasil!</h5>
                       <p className="text-emerald-700 leading-relaxed font-sans text-xs">
-                        Mohon cek inbox atau folder spam email Anda untuk melakukan verifikasi akun dengan mengklik tautan yang dikirimkan.
+                        Akun Anda berhasil terdaftar. Silakan masuk (Sign In) menggunakan email dan kata sandi Anda.
                       </p>
-                      
-                      {/* Interactive Simulation Controls for Testing */}
-                      <div className="flex flex-wrap items-center gap-2 mt-2.5 pt-2 border-t border-emerald-200/50">
-                        <span className="text-[9px] font-bold text-emerald-800/60 uppercase tracking-wider block w-full mb-0.5">
-                          Uji Tampilan Halaman Verifikasi:
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setCurrentView('verification-success')}
-                          className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] font-sans transition-all active:scale-[0.96] shadow-sm cursor-pointer"
-                        >
-                          Simulasi Sukses ✅
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCurrentView('verification-failed')}
-                          className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] font-sans transition-all active:scale-[0.96] shadow-sm cursor-pointer"
-                        >
-                          Simulasi Gagal ❌
-                        </button>
-                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -282,22 +261,22 @@ export default function AuthView({
           <div className="text-center space-y-4 border-t border-slate-50 pt-6">
             {currentView === 'login' ? (
               <p className="text-xs sm:text-sm text-slate-500 font-sans">
-                Don't have an account?{' '}
+                Belum punya akun?{' '}
                 <button 
                   onClick={triggerRegisterView}
                   className="font-bold text-brand-600 hover:text-brand-700 hover:underline transition-colors"
                 >
-                  Create Account
+                  Buat Akun
                 </button>
               </p>
             ) : (
               <p className="text-xs sm:text-sm text-slate-500 font-sans">
-                Already have an account?{' '}
+                Sudah punya akun?{' '}
                 <button 
                   onClick={triggerLoginView}
                   className="font-bold text-brand-600 hover:text-brand-700 hover:underline transition-colors"
                 >
-                  Sign In
+                  Masuk
                 </button>
               </p>
             )}
@@ -309,7 +288,7 @@ export default function AuthView({
                 className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 hover:underline transition-all"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                Return to Landing Page
+                Kembali ke Beranda
               </button>
             </div>
           </div>

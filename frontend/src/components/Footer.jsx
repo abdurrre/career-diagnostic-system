@@ -19,7 +19,7 @@ export default function Footer({ currentView, handleTryAnother, triggerNotFoundV
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1 font-sans text-center md:text-left">
-            &copy; 2026 SkillPath AI. Intellectual Empowerment through Precision.
+            &copy; 2026 SkillPath AI. Pemberdayaan potensi karier lewat analisis presisi.
           </p>
         </div>
 

@@ -43,7 +43,7 @@ exports.scanCV = async (req, res) => {
     // service ai
     let aiResponse;
     try {
-      aiResponse = await axios.post(process.env.AI_SERVICE_URL, {
+      aiResponse = await axios.post(process.env.AI_SCAN_SERVICE_URL, {
         raw_text: finalRawTextInput,
         target_profession,
       });
@@ -64,84 +64,6 @@ exports.scanCV = async (req, res) => {
         item.description = skillData.description;
       }
     }
-    // const mockFinalScore = 85.5;
-    // const mockSkillAnalysis = [
-    //   // critical
-    //   {
-    //     name: "machine learning",
-    //     status: "match",
-    //     category: "critical",
-    //     description:
-    //       "Cabang AI yang memungkinkan sistem belajar dari data tanpa pemrograman eksplisit.",
-    //   },
-    //   {
-    //     name: "python",
-    //     status: "match",
-    //     category: "critical",
-    //     description:
-    //       "Bahasa pemrograman serbaguna yang banyak digunakan dalam data science, AI, dan pengembangan backend.",
-    //   },
-    //   {
-    //     name: "tensorflow",
-    //     status: "gap",
-    //     category: "critical",
-    //     description:
-    //       "Framework open-source dari Google untuk membangun dan melatih model machine learning dan deep learning.",
-    //   },
-
-    //   // important
-    //   {
-    //     name: "deep learning",
-    //     status: "gap",
-    //     category: "important",
-    //     description:
-    //       "Subfield machine learning menggunakan jaringan saraf berlapis untuk mengenali pola kompleks dalam data.",
-    //   },
-    //   {
-    //     name: "pytorch",
-    //     status: "gap",
-    //     category: "important",
-    //     description:
-    //       "Framework deep learning dari Meta yang populer untuk riset dan pengembangan model AI.",
-    //   },
-    //   {
-    //     name: "aws",
-    //     status: "match",
-    //     category: "important",
-    //     description:
-    //       "Platform cloud dari Amazon yang menyediakan layanan infrastruktur, komputasi, dan penyimpanan data.",
-    //   },
-
-    //   // supplementary
-    //   {
-    //     name: "ai",
-    //     status: "match",
-    //     category: "supplementary",
-    //     description:
-    //       "Bidang ilmu komputer yang berfokus pada pembuatan sistem yang mampu meniru kecerdasan manusia.",
-    //   },
-    //   {
-    //     name: "agile",
-    //     status: "gap",
-    //     category: "supplementary",
-    //     description:
-    //       "Metodologi pengembangan perangkat lunak iteratif yang menekankan kolaborasi tim dan adaptasi cepat.",
-    //   },
-    //   {
-    //     name: "azure",
-    //     status: "gap",
-    //     category: "supplementary",
-    //     description:
-    //       "Platform cloud dari Microsoft untuk membangun, mengelola, dan mendeploy aplikasi dan layanan.",
-    //   },
-    //   {
-    //     name: "nlp",
-    //     status: "gap",
-    //     category: "supplementary",
-    //     description:
-    //       "Natural Language Processing — cabang AI untuk memahami, memproses, dan menghasilkan bahasa manusia.",
-    //   },
-    // ];
 
     // response
     res.status(200).json({
@@ -235,5 +157,44 @@ exports.getUserHistories = async (req, res) => {
   } catch (error) {
     // response
     res.status(500).json({ error: error.message });
+  }
+};
+
+// chatbot dengan AI Engine
+exports.chatWithAI = async (req, res) => {
+  try {
+    const { message, profession_name, score, skill_analysis } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ message: "Pesan tidak boleh kosong" });
+    }
+
+    const chatServiceUrl = process.env.AI_CHAT_SERVICE_URL;
+
+    let aiResponse;
+    try {
+      aiResponse = await axios.post(chatServiceUrl, {
+        message,
+        profession_name,
+        score,
+        skill_analysis,
+      });
+    } catch (aiError) {
+      console.error(aiError);
+      
+      // Jika AI Engine mengembalikan error spesifik (misal dari slowapi atau validation error)
+      if (aiError.response) {
+        return res.status(aiError.response.status).json(aiError.response.data);
+      }
+
+      return res.status(502).json({
+        message: "Gagal mendapatkan respon dari Chatbot AI Engine",
+        error: aiError.message,
+      });
+    }
+
+    res.status(200).json(aiResponse.data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

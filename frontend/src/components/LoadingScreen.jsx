@@ -43,9 +43,9 @@ export default function LoadingScreen({ isAnalyzing, loadingStep }) {
 
             {/* Headings */}
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold font-outfit text-slate-800">Analyzing Profile</h2>
+              <h2 className="text-2xl font-bold font-outfit text-slate-800">Menganalisis Profil</h2>
               <p className="text-sm text-slate-400 font-sans leading-relaxed max-w-xs mx-auto">
-                Please hold while our AI constructs your skill map.
+                Mohon tunggu sebentar, AI kami sedang memetakan keahlian Anda.
               </p>
             </div>
 
@@ -71,7 +71,7 @@ export default function LoadingScreen({ isAnalyzing, loadingStep }) {
                       ? 'text-slate-400 font-medium' 
                       : 'text-slate-300'
                 }`}>
-                  Extracting skills from your CV...
+                  Mengekstrak keahlian dari CV Anda...
                 </span>
               </div>
 
@@ -95,7 +95,7 @@ export default function LoadingScreen({ isAnalyzing, loadingStep }) {
                       ? 'text-slate-400 font-medium' 
                       : 'text-slate-300'
                 }`}>
-                  Analyzing industry requirements...
+                  Menganalisis standar kebutuhan industri...
                 </span>
               </div>
 
@@ -119,7 +119,7 @@ export default function LoadingScreen({ isAnalyzing, loadingStep }) {
                       ? 'text-slate-400 font-medium' 
                       : 'text-slate-300'
                 }`}>
-                  Calculating your match score...
+                  Menghitung skor kecocokan Anda...
                 </span>
               </div>
             </div>

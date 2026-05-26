@@ -22,15 +22,15 @@ export default function ResetPasswordNewView({
     setError('');
 
     if (!newPassword) {
-      setError("New password is required.");
+      setError("Kata sandi baru wajib diisi.");
       return;
     }
     if (newPassword.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError("Kata sandi minimal harus 6 karakter.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Kata sandi tidak cocok.");
       return;
     }
 
@@ -82,8 +82,8 @@ export default function ResetPasswordNewView({
                 <User className="w-4.5 h-4.5" />
               </div>
               <div>
-                <h5 className="font-bold font-outfit text-xs text-white">Robert Greene</h5>
-                <p className="text-[10px] text-slate-300 font-sans mt-0.5">Author of The 50th Law</p>
+                <h5 className="font-bold font-outfit text-xs !text-white">Robert Greene</h5>
+                <p className="text-[10px] !text-slate-300 font-sans mt-0.5">Author of The 50th Law</p>
               </div>
             </div>
           </motion.div>
@@ -104,10 +104,10 @@ export default function ResetPasswordNewView({
           {/* Titles */}
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl font-bold font-outfit text-slate-900 tracking-tight">
-              Reset Password
+              Reset Kata Sandi
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 font-sans leading-relaxed">
-              Enter your new secure password below to restore and update access credentials.
+              Masukkan kata sandi baru Anda di bawah untuk memperbarui kredensial masuk Anda.
             </p>
           </div>
 
@@ -116,7 +116,7 @@ export default function ResetPasswordNewView({
             {/* New Password */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-700 font-outfit tracking-wide block">
-                New Password
+                Kata Sandi Baru
               </label>
               <div className="relative">
                 <input
@@ -136,7 +136,7 @@ export default function ResetPasswordNewView({
             {/* Confirm New Password */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-700 font-outfit tracking-wide block">
-                Confirm New Password
+                Konfirmasi Kata Sandi Baru
               </label>
               <div className="relative">
                 <input
@@ -178,11 +178,11 @@ export default function ResetPasswordNewView({
                 {loading ? (
                   <>
                     <Loader2 className="w-4.5 h-4.5 animate-spin" />
-                    <span>Saving New Password...</span>
+                    <span>Menyimpan Kata Sandi...</span>
                   </>
                 ) : (
                   <>
-                    <span>Save New Password</span>
+                    <span>Simpan Kata Sandi Baru</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -198,7 +198,7 @@ export default function ResetPasswordNewView({
                 className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 hover:underline transition-all"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                Cancel & Return Home
+                Batal & Kembali ke Beranda
               </button>
             </div>
           </div>

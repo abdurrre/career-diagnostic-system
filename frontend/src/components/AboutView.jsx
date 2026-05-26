@@ -19,14 +19,13 @@ export default function AboutView({ currentView, handleTryAnother }) {
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-brand-50 border border-brand-100/60 text-xs font-bold text-brand-600 uppercase tracking-wider">
           <Sparkles className="w-3.5 h-3.5" />
-          Intellectual Empowerment
+          Analisis Cerdas & Presisi
         </div>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight font-outfit">
-          About SkillPath AI
+          Tentang SkillPath AI
         </h1>
         <p className="text-sm sm:text-base text-slate-500 font-sans leading-relaxed">
-          SkillPath AI is a sophisticated career diagnostic system designed to analyze professional profiles, 
-          map candidate competencies against standard industry requirements, and construct optimized, actionable pathways.
+          SkillPath AI adalah sistem diagnostik karier canggih yang dirancang untuk menganalisis profil profesional, memetakan kompetensi kandidat terhadap kebutuhan industri, serta merancang peta jalan karier yang konkret dan optimal.
         </p>
       </div>
 
@@ -39,16 +38,16 @@ export default function AboutView({ currentView, handleTryAnother }) {
             <div className="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center border border-brand-100/40 shadow-sm">
               <Cpu className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold font-outfit text-slate-800">Our Mission</h3>
+            <h3 className="text-xl font-bold font-outfit text-slate-800">Misi Kami</h3>
             <p className="text-sm text-slate-500 font-sans leading-relaxed">
-              We empower ambitious professionals by demystifying ATS parameters. Our sophisticated engine helps identify critical, important, and supplementary skillset gaps depending on target industry roles in real-time.
+              Kami membantu para profesional ambisius dengan memecahkan parameter ATS rekrutmen. Mesin cerdas kami mendeteksi kesenjangan keahlian dalam tingkat kritis, penting, maupun pelengkap secara real-time berdasarkan peran target industri.
             </p>
           </div>
           <button 
             onClick={handleTryAnother}
             className="text-brand-600 hover:text-brand-700 font-bold text-xs flex items-center gap-1.5 hover:underline font-outfit self-start"
           >
-            <span>Analyze Your CV</span>
+            <span>Pindai CV Anda</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -59,9 +58,9 @@ export default function AboutView({ currentView, handleTryAnother }) {
             <div className="w-12 h-12 rounded-xl bg-indigo-50 text-brand-500 flex items-center justify-center border border-indigo-100/40 shadow-sm">
               <Code2 className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold font-outfit text-slate-800">Engineering Stack</h3>
+            <h3 className="text-xl font-bold font-outfit text-slate-800">Arsitektur Teknologi</h3>
             <p className="text-sm text-slate-500 font-sans leading-relaxed">
-              Built using a state-of-the-art client structure designed for speed and responsiveness. The layout harnesses HSL curated styles, Vite, React core state engines, and Framer Motion layout boundaries.
+              Dibangun menggunakan struktur modern yang dirancang untuk kecepatan dan responsivitas. Tata letak aplikasi memanfaatkan visual warna HSL, Vite, React core state, dan animasi Framer Motion.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -76,7 +75,7 @@ export default function AboutView({ currentView, handleTryAnother }) {
       {/* Grid: 3 Column Bullet features */}
       <div className="max-w-5xl mx-auto space-y-8 pt-4 border-t border-slate-100">
         <h3 className="text-center font-bold text-lg font-outfit text-slate-800 uppercase tracking-wider">
-          Core Engine Capabilities
+          Kemampuan Utama Sistem
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -85,9 +84,9 @@ export default function AboutView({ currentView, handleTryAnother }) {
               <ShieldCheck className="w-4.5 h-4.5" />
             </div>
             <div className="space-y-1">
-              <h5 className="font-bold text-sm text-slate-800 font-outfit">ATS-Optimized Parsing</h5>
+              <h5 className="font-bold text-sm text-slate-800 font-outfit">Analisis Teroptimasi ATS</h5>
               <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                Matches candidate profiles directly with recruiter parameters.
+                Mencocokkan profil kandidat secara langsung dengan parameter ATS perekrut.
               </p>
             </div>
           </div>
@@ -97,9 +96,9 @@ export default function AboutView({ currentView, handleTryAnother }) {
               <Layers className="w-4.5 h-4.5" />
             </div>
             <div className="space-y-1">
-              <h5 className="font-bold text-sm text-slate-800 font-outfit">Prioritized Gap Analysis</h5>
+              <h5 className="font-bold text-sm text-slate-800 font-outfit">Analisis Celah Prioritas</h5>
               <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                Buckets skillset issues into Critical, Important, and Supplementary levels.
+                Mengelompokkan masalah keahlian ke dalam tingkat Kritis, Penting, dan Pelengkap.
               </p>
             </div>
           </div>
@@ -109,9 +108,9 @@ export default function AboutView({ currentView, handleTryAnother }) {
               <Sparkles className="w-4.5 h-4.5" />
             </div>
             <div className="space-y-1">
-              <h5 className="font-bold text-sm text-slate-800 font-outfit">Diagnostics Archives</h5>
+              <h5 className="font-bold text-sm text-slate-800 font-outfit">Penyimpanan Arsip</h5>
               <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                Stores your scanned logs, scores, and paths for immediate retrieval.
+                Menyimpan riwayat pemindaian, skor, dan peta jalan Anda untuk diakses kapan saja.
               </p>
             </div>
           </div>

@@ -52,13 +52,13 @@ export default function HistoryView({
         <div className="space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-brand-50 border border-brand-100/60 text-xs font-bold text-brand-600 uppercase tracking-wider">
             <Calendar className="w-3.5 h-3.5" />
-            Diagnostic Archives
+            Arsip Diagnostik
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight font-outfit">
-            Your Analysis History
+            Riwayat Analisis Anda
           </h1>
           <p className="text-sm sm:text-base text-slate-500 font-sans max-w-2xl">
-            A comprehensive record of all your diagnostic CV scans, target matches, and capability pathways.
+            Catatan komprehensif dari semua pemindaian diagnostik CV, kualifikasi target, dan tingkat kecocokan keahlian Anda.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export default function HistoryView({
             className="px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center gap-2 active:scale-[0.98] cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            New CV Analysis
+            Analisis CV Baru
           </button>
         </div>
       </div>
@@ -82,7 +82,7 @@ export default function HistoryView({
           </div>
           <div>
             <span className="text-2xl font-black text-slate-800 font-outfit leading-none">{totalAnalyzed}</span>
-            <p className="text-xs text-slate-400 mt-0.5 font-sans font-medium">Scans Completed</p>
+            <p className="text-xs text-slate-400 mt-0.5 font-sans font-medium">CV Teranalisis</p>
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default function HistoryView({
           </div>
           <div>
             <span className="text-2xl font-black text-slate-800 font-outfit leading-none">{avgScore}%</span>
-            <p className="text-xs text-slate-400 mt-0.5 font-sans font-medium">Average Match Score</p>
+            <p className="text-xs text-slate-400 mt-0.5 font-sans font-medium">Rata-rata Skor Kecocokan</p>
           </div>
         </div>
 
@@ -101,8 +101,8 @@ export default function HistoryView({
             <Award className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-sm font-bold text-slate-700 font-outfit leading-none">Diagnostic Active</span>
-            <p className="text-xs text-slate-400 mt-1 font-sans font-medium">Vite + React Core Engine</p>
+            <span className="text-sm font-bold text-slate-700 font-outfit leading-none">Sistem Diagnostik Aktif</span>
+            <p className="text-xs text-slate-400 mt-1 font-sans font-medium">Mesin Inti Vite + React</p>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function HistoryView({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search target profession or CV file..."
+            placeholder="Cari profesi impian atau file CV..."
             className="premium-input pl-11 text-sm font-sans w-full"
           />
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -126,7 +126,7 @@ export default function HistoryView({
         {/* Filter count indicator */}
         <div className="flex items-center gap-2 text-xs text-slate-400 font-sans font-medium">
           <ListFilter className="w-4 h-4 text-slate-400" />
-          Showing {filteredHistory.length} of {totalAnalyzed} historical entries
+          Menampilkan {filteredHistory.length} dari {totalAnalyzed} riwayat analisis
         </div>
       </div>
 
@@ -144,11 +144,11 @@ export default function HistoryView({
               <table className="w-full text-left border-collapse min-w-[700px] font-sans">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50/50 text-slate-400 font-bold text-[11px] uppercase tracking-wider font-outfit">
-                    <th className="py-4.5 px-6">Target Role</th>
-                    <th className="py-4.5 px-6 text-center">Match Score</th>
-                    <th className="py-4.5 px-6">Attached CV</th>
-                    <th className="py-4.5 px-6">Date Analyzed</th>
-                    <th className="py-4.5 px-6 text-right">Actions</th>
+                    <th className="py-4.5 px-6">Profesi Impian</th>
+                    <th className="py-4.5 px-6 text-center">Skor Kecocokan</th>
+                    <th className="py-4.5 px-6">File CV</th>
+                    <th className="py-4.5 px-6">Tanggal Analisis</th>
+                    <th className="py-4.5 px-6 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100/60 text-slate-600 text-xs sm:text-sm">
@@ -214,10 +214,10 @@ export default function HistoryView({
                             <button
                               onClick={() => handleLoadReport(item.role)}
                               className="px-3.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-brand-600 text-brand-600 hover:text-white font-bold text-xs transition-all flex items-center gap-1 cursor-pointer active:scale-95 border border-indigo-100/50 hover:border-brand-600 hover:shadow-sm"
-                              title="View full report"
+                              title="Lihat hasil penuh"
                             >
                               <Eye className="w-3.5 h-3.5" />
-                              <span>View Report</span>
+                              <span>Lihat Hasil</span>
                             </button>
                             <button
                               onClick={() => handleDeleteRecord(item.id)}
@@ -248,12 +248,12 @@ export default function HistoryView({
               </div>
               <div className="space-y-2 max-w-sm mx-auto">
                 <h3 className="text-xl font-bold font-outfit text-slate-800">
-                  {searchQuery ? 'No Matching Records' : 'No Diagnostics History Yet'}
+                  {searchQuery ? 'Tidak Ada Riwayat yang Cocok' : 'Belum Ada Riwayat Analisis'}
                 </h3>
                 <p className="text-sm text-slate-400 font-sans leading-relaxed">
                   {searchQuery 
-                    ? `No analysis archives match "${searchQuery}". Try updating your search query.`
-                    : 'Analyze your CV against target professions to map your diagnostic alignment archives.'}
+                    ? `Tidak ada arsip analisis yang cocok dengan "${searchQuery}". Coba gunakan kata kunci pencarian lain.`
+                    : 'Pindai CV Anda pada profesi target untuk memetakan keselarasan dan melihat riwayat Anda di sini.'}
                 </p>
               </div>
               <div>
@@ -262,7 +262,7 @@ export default function HistoryView({
                   className="px-6 py-2.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center justify-center gap-2 mx-auto active:scale-95 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Start New Analysis</span>
+                  <span>Mulai Analisis Baru</span>
                 </button>
               </div>
             </motion.div>

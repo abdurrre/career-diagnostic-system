@@ -60,10 +60,10 @@ export default function ResetPasswordSuccessView({
         {/* Headings */}
         <div className="space-y-3">
           <h2 className="text-2xl sm:text-3xl font-bold font-outfit text-slate-900 tracking-tight leading-tight">
-            Password Updated
+            Kata Sandi Diperbarui
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 font-sans leading-relaxed max-w-xs mx-auto">
-            Your security password has been changed successfully. You can now use your new password to sign in.
+            Kata sandi Anda berhasil diperbarui. Silakan gunakan kata sandi baru Anda untuk masuk ke sistem.
           </p>
         </div>
 
@@ -73,14 +73,14 @@ export default function ResetPasswordSuccessView({
             onClick={triggerLoginView}
             className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold font-outfit text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
           >
-            <span>Proceed to Sign In</span>
+            <span>Masuk Sekarang</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
         {/* Footer */}
         <div className="text-[11px] text-slate-400 font-sans border-t border-slate-50 pt-6">
-          Need support? Contact us at{' '}
+          Butuh bantuan? Hubungi kami di{' '}
           <a href="#contact" className="font-semibold text-brand-600 hover:underline">
             support@skillpath.ai
           </a>

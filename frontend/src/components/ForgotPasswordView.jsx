@@ -24,7 +24,7 @@ export default function ForgotPasswordView({
     setSuccess(false);
 
     if (!email) {
-      setError("Email address is required.");
+      setError("Alamat email wajib diisi.");
       return;
     }
 
@@ -77,8 +77,8 @@ export default function ForgotPasswordView({
                 <User className="w-4.5 h-4.5" />
               </div>
               <div>
-                <h5 className="font-bold font-outfit text-xs text-white">Robert Greene</h5>
-                <p className="text-[10px] text-slate-300 font-sans mt-0.5">Author of The 48 Laws of Power</p>
+                <h5 className="font-bold font-outfit text-xs !text-white">Robert Greene</h5>
+                <p className="text-[10px] !text-slate-300 font-sans mt-0.5">Author of The 48 Laws of Power</p>
               </div>
             </div>
           </motion.div>
@@ -100,10 +100,10 @@ export default function ForgotPasswordView({
           {/* Titles block */}
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl font-bold font-outfit text-slate-900 tracking-tight">
-              Forgot Password
+              Lupa Kata Sandi
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 font-sans leading-relaxed">
-              Enter your email address below. We'll send you a password recovery link to restore access.
+              Masukkan alamat email Anda di bawah. Kami akan mengirimkan tautan pemulihan kata sandi untuk memulihkan akses akun Anda.
             </p>
           </div>
 
@@ -111,7 +111,7 @@ export default function ForgotPasswordView({
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-700 font-outfit tracking-wide block">
-                Email Address
+                Alamat Email
               </label>
               <div className="relative">
                 <input
@@ -155,11 +155,11 @@ export default function ForgotPasswordView({
                   {loading ? (
                     <>
                       <Loader2 className="w-4.5 h-4.5 animate-spin" />
-                      <span>Dispatching Link...</span>
+                      <span>Mengirimkan Tautan...</span>
                     </>
                   ) : (
                     <>
-                      <span>Send Recovery Link</span>
+                      <span>Kirim Tautan Pemulihan</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -205,12 +205,12 @@ export default function ForgotPasswordView({
           {/* Footer links switching back to Login */}
           <div className="text-center space-y-4 border-t border-slate-50 pt-6">
             <p className="text-xs sm:text-sm text-slate-500 font-sans">
-              Remember your password?{' '}
+              Ingat kata sandi Anda?{' '}
               <button 
                 onClick={triggerLoginView}
                 className="font-bold text-brand-600 hover:text-brand-700 hover:underline transition-colors"
               >
-                Sign In
+                Masuk
               </button>
             </p>
             <div>
@@ -219,7 +219,7 @@ export default function ForgotPasswordView({
                 className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 hover:underline transition-all"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                Return to Landing Page
+                Kembali ke Beranda
               </button>
             </div>
           </div>

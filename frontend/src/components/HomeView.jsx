@@ -54,7 +54,7 @@ export default function HomeView({
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-950 font-outfit leading-tight">
-            Bridge your skill gap with <span className="bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">AI</span>
+            Jembatani kesenjangan keahlian Anda dengan <span className="bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">AI</span>
           </h1>
         </motion.div>
 
@@ -64,8 +64,7 @@ export default function HomeView({
           transition={{ duration: 0.6, delay: 0.15 }}
           className="text-base sm:text-lg text-slate-500 leading-relaxed font-sans max-w-3xl mx-auto"
         >
-          Upload your CV, select your target profession, and let our sophisticated AI engine map out 
-          your personalized path to career advancement. Precision insights for ambitious professionals.
+          Unggah CV Anda, pilih profesi impian, dan biarkan sistem AI kami merancang peta jalan karier khusus untuk Anda. Analisis presisi untuk profesional ambisius.
         </motion.p>
       </section>
 
@@ -116,13 +115,13 @@ export default function HomeView({
                       <Upload className="w-8 h-8" />
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-xl font-bold font-outfit text-slate-800">Upload your CV</h3>
+                      <h3 className="text-xl font-bold font-outfit text-slate-800">Unggah CV Anda</h3>
                       <p className="text-sm text-slate-400 font-sans max-w-xs mx-auto">
-                        Drag and drop your PDF here, or <span className="text-brand-600 font-medium hover:underline">click to browse files</span>.
+                        Seret dan lepas file PDF di sini, atau <span className="text-brand-600 font-medium hover:underline">klik untuk memilih file</span>.
                       </p>
                     </div>
                     <span className="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      Supported: PDF (Max 5MB)
+                      Format yang didukung: PDF (Maks. 5MB)
                     </span>
                   </motion.div>
                 ) : (
@@ -146,12 +145,12 @@ export default function HomeView({
                     </div>
                     <div className="flex items-center justify-center gap-3">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-xs font-semibold text-emerald-700">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> CV Ready
+                        <CheckCircle2 className="w-3.5 h-3.5" /> CV Siap
                       </span>
                       <button 
                         onClick={handleRemoveFile}
                         className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
-                        title="Remove file"
+                        title="Hapus file"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -182,7 +181,7 @@ export default function HomeView({
                   <div className="p-2 rounded-lg bg-indigo-50 text-brand-600">
                     <Briefcase className="w-5 h-5" />
                   </div>
-                  <label className="font-bold text-base font-outfit">Target Profession</label>
+                  <label className="font-bold text-base font-outfit">Profesi Target</label>
                 </div>
                 
                 <div className="relative">
@@ -192,7 +191,7 @@ export default function HomeView({
                     required
                     className="premium-input appearance-none pr-10 font-sans text-sm focus:border-brand-500 cursor-pointer"
                   >
-                    <option value="" disabled>Select your target role...</option>
+                    <option value="" disabled>Pilih profesi target Anda...</option>
                     {professions.map((role) => (
                       <option key={role} value={role}>{role}</option>
                     ))}
@@ -210,14 +209,14 @@ export default function HomeView({
                     <FileText className="w-5 h-5" />
                   </div>
                   <label className="font-bold text-base font-outfit">
-                    Additional Context <span className="text-slate-400 font-normal text-xs">(Optional)</span>
+                    Konteks Tambahan <span className="text-slate-400 font-normal text-xs">(Opsional)</span>
                   </label>
                 </div>
                 
                 <textarea
                   value={additionalContext}
                   onChange={(e) => setAdditionalContext(e.target.value)}
-                  placeholder="Mention any recent courses, soft skills, or specific areas you want the AI to focus on..."
+                  placeholder="Sebutkan kursus terbaru, soft skill, atau fokus keahlian khusus yang ingin Anda tonjolkan..."
                   rows={4}
                   className="premium-input resize-none font-sans text-sm min-h-[110px]"
                 />
@@ -242,12 +241,12 @@ export default function HomeView({
               {isAnalyzing ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Analyzing...</span>
+                  <span>Menganalisis...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-5 h-5" />
-                  <span>Analyze My CV</span>
+                  <span>Scan CV Saya</span>
                 </>
               )}
             </motion.button>
@@ -278,24 +277,22 @@ export default function HomeView({
                 <TrendingUp className="w-6 h-6 animate-pulse" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-outfit">
-                How it works
+                Cara kerja
               </h2>
             </div>
             
             <p className="text-slate-500 leading-relaxed font-sans text-sm sm:text-base">
-              Our AI deeply analyzes your current experience against thousands of industry-standard 
-              job descriptions for your target role. We identify the precise gaps in your technical 
-              and soft skills, providing a clear, actionable roadmap to level up your career trajectory.
+              Kecerdasan buatan kami menganalisis pengalaman Anda secara mendalam berdasarkan ribuan deskripsi pekerjaan standar industri. Kami mengidentifikasi kesenjangan keterampilan teknis dan soft skill Anda secara akurat untuk memberikan peta jalan konkret demi meningkatkan karier Anda.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="border border-slate-100 bg-slate-50/50 p-4 rounded-xl">
                 <span className="text-2xl font-black text-brand-600 font-outfit">10k+</span>
-                <p className="text-xs text-slate-400 mt-1 font-sans">Job Descriptions Checked</p>
+                <p className="text-xs text-slate-400 mt-1 font-sans">Deskripsi Kerja Teranalisis</p>
               </div>
               <div className="border border-slate-100 bg-slate-50/50 p-4 rounded-xl">
                 <span className="text-2xl font-black text-brand-600 font-outfit">Real-time</span>
-                <p className="text-xs text-slate-400 mt-1 font-sans">Skill Gap Roadmap</p>
+                <p className="text-xs text-slate-400 mt-1 font-sans">Peta Jalan Keahlian</p>
               </div>
             </div>
           </div>

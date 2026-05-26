@@ -34,24 +34,27 @@ export default function Navbar({
 
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center gap-8 bg-slate-200/40 px-5 py-2 rounded-full border border-slate-100">
-          {['Home', 'History', 'About'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => handleTabChange(tab)}
-              className={`relative font-medium text-sm transition-colors py-1 px-3 rounded-full ${
-                activeTab === tab ? 'text-brand-700' : 'text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              {tab}
-              {activeTab === tab && (
-                <motion.div
-                  layoutId="activeTabUnderline"
-                  className="absolute inset-0 bg-white shadow-sm border border-slate-100 rounded-full -z-10"
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                />
-              )}
-            </button>
-          ))}
+          {['Home', 'History', 'About'].map((tab) => {
+            const tabLabels = { Home: 'Beranda', History: 'Riwayat', About: 'Tentang' };
+            return (
+              <button
+                key={tab}
+                onClick={() => handleTabChange(tab)}
+                className={`relative font-medium text-sm transition-colors py-1 px-3 rounded-full ${
+                  activeTab === tab ? 'text-brand-700' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                {tabLabels[tab]}
+                {activeTab === tab && (
+                  <motion.div
+                    layoutId="activeTabUnderline"
+                    className="absolute inset-0 bg-white shadow-sm border border-slate-100 rounded-full -z-10"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </nav>
 
         {/* Action Buttons */}
@@ -69,7 +72,7 @@ export default function Navbar({
                 onClick={handleSignOut}
                 className="px-5 py-2.5 rounded-full border border-slate-200/80 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 font-bold text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
               >
-                Sign Out
+                Keluar
               </button>
             </div>
           ) : (
@@ -78,13 +81,13 @@ export default function Navbar({
                 onClick={triggerLoginView}
                 className="px-6 py-2 rounded-full font-medium text-sm text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
               >
-                Sign In
+                Login
               </button>
               <button 
                 onClick={triggerLoginView}
                 className="px-6 py-2.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all active:scale-[0.98] cursor-pointer"
               >
-                Login
+                Sign Up
               </button>
             </div>
           )}

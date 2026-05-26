@@ -57,10 +57,10 @@ export default function NotFoundView({ currentView, handleTryAnother }) {
             Error 404
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold font-outfit text-slate-900 tracking-tight leading-tight">
-            Page Not Found
+            Halaman Tidak Ditemukan
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 font-sans leading-relaxed max-w-xs mx-auto">
-            The pathway or page URL you requested does not exist or has been relocated by our routing controllers.
+            Jalur atau halaman URL yang Anda cari tidak ada atau telah dipindahkan oleh sistem kami.
           </p>
         </div>
 
@@ -71,7 +71,7 @@ export default function NotFoundView({ currentView, handleTryAnother }) {
             className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold font-outfit text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Return to Landing Page</span>
+            <span>Kembali ke Beranda</span>
           </button>
         </div>
 
