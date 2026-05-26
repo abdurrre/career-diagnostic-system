@@ -1,11 +1,12 @@
 PORT=5000
 DB_HOST=localhost
-DB_USER=
+DB_USER=root
 DB_PASS=
-DB_NAME=
+DB_NAME=capstone_project
 DB_DIALECT=mysql
 
 JWT_SECRET=rahasia
-GROQ_API_KEY=your-groq-api-key-here
 
-AI_SERVICE_URL=http://localhost:8000/api/ai/analyze
+AI_SCAN_SERVICE_URL=http://localhost:8000/api/diagnose
+AI_CHAT_SERVICE_URL=http://localhost:8000/api/chat
+GROQ_API_KEY=
