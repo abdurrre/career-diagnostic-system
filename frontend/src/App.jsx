@@ -38,21 +38,95 @@ function App() {
       role: 'Backend Developer',
       score: 84,
       fileName: 'CV_Naufal_Backend.pdf',
-      date: '24 May 2026'
+      date: '24 May 2026',
+      skills: ["Node.js", "Express.js", "SQL", "PostgreSQL", "REST APIs", "Git", "Docker", "Database Design", "Communication"],
+      gaps: [
+        {
+          title: "Redis Caching",
+          tier: "CRITICAL",
+          description: "Profil Anda kurang memiliki pengalaman dengan database in-memory caching. Sangat penting untuk sistem konkurensi tinggi."
+        },
+        {
+          title: "Kubernetes",
+          tier: "IMPORTANT",
+          description: "Sangat krusial untuk orkestrasi microservices dan manajemen container pada skala produksi."
+        },
+        {
+          title: "GraphQL",
+          tier: "SUPPLEMENTARY",
+          description: "Meskipun REST API sudah sangat kuat, pemahaman GraphQL akan meningkatkan fleksibilitas arsitektur API Anda."
+        },
+        {
+          title: "CI/CD Pipeline Automation",
+          tier: "IMPORTANT",
+          description: "Pengalaman mengotomatiskan deployment dengan GitHub Actions atau GitLab CI sangat dicari industri modern."
+        },
+        {
+          title: "System Design Patterns",
+          tier: "CRITICAL",
+          description: "Kemampuan merancang arsitektur sistem skala besar yang andal dan toleran terhadap kegagalan."
+        }
+      ]
     },
     {
       id: 'hist-2',
       role: 'Frontend Developer',
       score: 81,
       fileName: 'CV_Naufal_Frontend.pdf',
-      date: '22 May 2026'
+      date: '22 May 2026',
+      skills: ["React", "HTML/CSS", "JavaScript", "Tailwind CSS", "Vite", "TypeScript", "Responsive Design", "Git"],
+      gaps: [
+        {
+          title: "Next.js & SSR",
+          tier: "CRITICAL",
+          description: "Profil Anda berfokus pada aplikasi SPA standar. Pengetahuan tentang server-side rendering sangat penting di era modern."
+        },
+        {
+          title: "Cypress Testing",
+          tier: "IMPORTANT",
+          description: "Krusial untuk deployment aplikasi yang tangguh. Fokus pada mempelajari end-to-end testing secara otomatis."
+        },
+        {
+          title: "Web Accessibility (WCAG)",
+          tier: "SUPPLEMENTARY",
+          description: "Memahami kepatuhan aksesibilitas web dan markup semantik adalah keunggulan tambahan yang luar biasa."
+        },
+        {
+          title: "Global State Management (Zustand/Redux)",
+          tier: "IMPORTANT",
+          description: "Kemampuan mengelola state aplikasi skala besar yang kompleks secara efisien dan clean."
+        }
+      ]
     },
     {
       id: 'hist-3',
       role: 'Data Scientist',
       score: 78,
       fileName: 'CV_Naufal_DataSci.pdf',
-      date: '18 May 2026'
+      date: '18 May 2026',
+      skills: ["Python", "SQL", "Data Visualization", "Machine Learning Basics", "Communication", "Project Management", "Agile Methodologies", "Pandas"],
+      gaps: [
+        {
+          title: "Deep Learning",
+          tier: "CRITICAL",
+          description: "Penting untuk peran lanjutan. Profil Anda kekurangan pengalaman dengan framework mendalam seperti PyTorch atau TensorFlow."
+        },
+        {
+          title: "MLOps Pipeline",
+          tier: "IMPORTANT",
+          description: "Krusial untuk menerapkan model ke lingkungan produksi. Pelajari Docker, Kubernetes, dan alat alur kerja ML."
+        },
+        {
+          title: "Cloud Machine Learning (AWS/GCP)",
+          tier: "SUPPLEMENTARY",
+          description: "Sertifikasi atau portofolio penerapan model pada infrastruktur cloud akan mendongkrak profil Anda secara signifikan."
+        },
+        {
+          title: "Large Language Models (LLM)",
+          tier: "CRITICAL",
+          description: "Kemampuan menerapkan teknik Retrieval-Augmented Generation (RAG) dan fine-tuning model bahasa besar di industri saat ini."
+        }
+      ]
     }
   ]);
 
@@ -111,13 +185,38 @@ function App() {
       })
       .then(data => {
         if (data && Array.isArray(data)) {
-          const mapped = data.map(item => ({
-            id: item.id,
-            role: item.Profession ? item.Profession.name : 'Unknown Role',
-            score: Math.round(item.score),
-            fileName: 'CV_Scanned_File.pdf',
-            date: new Date(item.created_at || item.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-          }));
+          const mapped = data.map(item => {
+            const skills = [];
+            const gaps = [];
+
+            if (item.Skills && Array.isArray(item.Skills)) {
+              item.Skills.forEach(s => {
+                const status = s.HistorySkill ? s.HistorySkill.status : 'match';
+                const category = s.HistorySkill ? s.HistorySkill.category : 'IMPORTANT';
+                const formattedName = s.name.charAt(0).toUpperCase() + s.name.slice(1);
+
+                if (status === 'match') {
+                  skills.push(formattedName);
+                } else if (status === 'gap') {
+                  gaps.push({
+                    title: formattedName,
+                    tier: category.toUpperCase(),
+                    description: s.description || 'Kesenjangan kemampuan keahlian yang terpetakan berdasarkan kebutuhan standar industri.'
+                  });
+                }
+              });
+            }
+
+            return {
+              id: item.id,
+              role: item.Profession ? item.Profession.name : 'Unknown Role',
+              score: Math.round(item.score),
+              fileName: 'CV_Scanned_File.pdf',
+              date: new Date(item.created_at || item.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+              skills: skills.length > 0 ? skills : null,
+              gaps: gaps.length > 0 ? gaps : null
+            };
+          });
           setHistoryList(mapped);
         }
       })
@@ -208,14 +307,14 @@ function App() {
     setLoadingStep(1);
     setAnalysisSuccess(false);
 
-    // Setup visual UI timer transitions
-    const step2Timer = setTimeout(() => {
-      setLoadingStep(2);
-    }, 2500);
-
-    const step3Timer = setTimeout(() => {
-      setLoadingStep(3);
-    }, 5000);
+    // Dynamic non-blocking checklist progression
+    let step = 1;
+    const progressInterval = setInterval(() => {
+      if (step < 3) {
+        step += 1;
+        setLoadingStep(step);
+      }
+    }, 1200);
 
     // Dispatch scan action to backend Express API
     const formData = new FormData();
@@ -229,6 +328,9 @@ function App() {
         body: formData
       });
 
+      // Clear progression timer instantly as backend returned
+      clearInterval(progressInterval);
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to parse profile CV file");
@@ -236,52 +338,43 @@ function App() {
 
       const scanResult = await response.json();
 
-      // Clear timers
-      clearTimeout(step2Timer);
-      clearTimeout(step3Timer);
-      setLoadingStep(4);
+      setIsAnalyzing(false);
+      setAnalysisSuccess(true);
+      setAnalyzedRole(scanResult.profession_name || selectedRole);
 
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setAnalysisSuccess(true);
-        setAnalyzedRole(scanResult.profession_name || selectedRole);
+      // Convert the returned skill_analysis records to dynamic ReportView parameters
+      const skillAnalysis = scanResult.skill_analysis || [];
+      const matchedSkills = skillAnalysis
+        .filter(item => item.status === 'match')
+        .map(item => item.name.charAt(0).toUpperCase() + item.name.slice(1));
+      
+      const missedGaps = skillAnalysis
+        .filter(item => item.status === 'gap')
+        .map(item => ({
+          title: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+          tier: item.category ? item.category.toUpperCase() : 'IMPORTANT',
+          description: item.description || 'Kesenjangan kemampuan keahlian yang terpetakan berdasarkan kebutuhan standar industri.'
+        }));
 
-        // Convert the returned skill_analysis records to dynamic ReportView parameters
-        const skillAnalysis = scanResult.skill_analysis || [];
-        const matchedSkills = skillAnalysis
-          .filter(item => item.status === 'match')
-          .map(item => item.name.charAt(0).toUpperCase() + item.name.slice(1));
-        
-        const missedGaps = skillAnalysis
-          .filter(item => item.status === 'gap')
-          .map(item => ({
-            title: item.name.charAt(0).toUpperCase() + item.name.slice(1),
-            tier: item.category ? item.category.toUpperCase() : 'IMPORTANT',
-            description: item.description || 'Target skillset capability gap mapped by automated recruiter guidelines.'
-          }));
+      const dynamicRolePayload = {
+        matchScore: Math.round(scanResult.score || 78),
+        skills: matchedSkills.length > 0 ? matchedSkills : ['Python', 'SQL', 'Git', 'Team Collaboration'],
+        gaps: missedGaps.length > 0 ? missedGaps : [
+          { title: 'System Orchestration', tier: 'CRITICAL', description: 'Bridge standard operational gaps.' }
+        ]
+      };
 
-        const dynamicRolePayload = {
-          matchScore: Math.round(scanResult.score || 78),
-          skills: matchedSkills.length > 0 ? matchedSkills : ['Python', 'SQL', 'Git', 'Team Collaboration'],
-          gaps: missedGaps.length > 0 ? missedGaps : [
-            { title: 'System Orchestration', tier: 'CRITICAL', description: 'Bridge standard operational gaps.' }
-          ]
-        };
+      // Cache inside active dataset list
+      professionsData[scanResult.profession_name || selectedRole] = dynamicRolePayload;
 
-        // Cache inside active dataset list
-        professionsData[scanResult.profession_name || selectedRole] = dynamicRolePayload;
-
-        setCurrentView('report');
-        setActiveTab('History');
-      }, 800);
+      setCurrentView('report');
+      setActiveTab('History');
 
     } catch (err) {
+      clearInterval(progressInterval);
       console.log("Vite scanner fail-safe: backend offline or AI config empty. Gracefully loading offline interactive mocks.", err);
       
       // Fallback
-      clearTimeout(step2Timer);
-      clearTimeout(step3Timer);
-      setLoadingStep(4);
       setTimeout(() => {
         setIsAnalyzing(false);
         setAnalysisSuccess(true);
@@ -292,7 +385,7 @@ function App() {
         setToastMessage("Pindai CV Berhasil (Mode Demonstrasi Offline)");
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3500);
-      }, 800);
+      }, 300);
     }
   };
 
@@ -304,8 +397,21 @@ function App() {
   };
 
   // Centralized report loading action
-  const handleLoadReport = (role) => {
-    setAnalyzedRole(role);
+  const handleLoadReport = (target) => {
+    if (typeof target === 'string') {
+      setAnalyzedRole(target);
+    } else if (target && typeof target === 'object') {
+      setAnalyzedRole(target.role);
+      
+      // Cache the loaded custom skills & gaps so currentRoleData can resolve them!
+      if (target.skills || target.gaps) {
+        professionsData[target.role] = {
+          matchScore: target.score,
+          skills: target.skills || [],
+          gaps: target.gaps || []
+        };
+      }
+    }
     setCurrentView('report');
     setActiveTab('History');
   };

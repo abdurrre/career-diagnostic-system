@@ -212,7 +212,7 @@ export default function HistoryView({
                         <td className="py-4 px-6 text-right">
                           <div className="flex items-center justify-end gap-2.5">
                             <button
-                              onClick={() => handleLoadReport(item.role)}
+                              onClick={() => handleLoadReport(item)}
                               className="px-3.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-brand-600 text-brand-600 hover:text-white font-bold text-xs transition-all flex items-center gap-1 cursor-pointer active:scale-95 border border-indigo-100/50 hover:border-brand-600 hover:shadow-sm"
                               title="Lihat hasil penuh"
                             >

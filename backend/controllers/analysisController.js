@@ -113,16 +113,22 @@ exports.saveHistory = async (req, res) => {
     }
 
     for (const item of skill_analysis) {
-      const skillData = await Skill.findOne({ where: { name: item.name } });
+      const cleanName = item.name.toLowerCase().trim();
+      let skillData = await Skill.findOne({ where: { name: cleanName } });
 
-      if (skillData) {
-        historySkillData.push({
-          id_history: newHistory.id,
-          id_skill: skillData.id,
-          status: item.status,
-          category: item.category,
+      if (!skillData) {
+        skillData = await Skill.create({
+          name: cleanName,
+          description: item.description || 'Kesenjangan kemampuan keahlian yang terpetakan berdasarkan kebutuhan standar industri.'
         });
       }
+
+      historySkillData.push({
+        id_history: newHistory.id,
+        id_skill: skillData.id,
+        status: item.status,
+        category: item.category,
+      });
     }
 
     if (historySkillData.length > 0) {
