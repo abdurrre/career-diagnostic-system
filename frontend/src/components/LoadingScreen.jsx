@@ -32,11 +32,32 @@ export default function LoadingScreen({ isAnalyzing, loadingStep }) {
               />
               
               {/* Cognitive/Brain Gear AI Icon Inside */}
-              <div className="z-10 bg-brand-50/50 w-24 h-24 rounded-full flex items-center justify-center shadow-inner">
-                <svg className="w-11 h-11 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 4.5c-3.59 0-6.5 2.91-6.5 6.5 0 1.82.75 3.47 1.95 4.65L7 19.5c-.1.3.1.5.4.5h8.2c.3 0 .5-.2.4-.5l-.45-3.85c1.2-1.18 1.95-2.83 1.95-4.65 0-3.59-2.91-6.5-6.5-6.5Z" />
-                  <circle cx="12" cy="11" r="2.5" />
-                  <path d="M12 8v1M12 13v1M9 11h1M14 11h1M9.9 8.9l.7.7M13.4 12.4l.7.7M9.9 13.1l.7-.7M13.4 9.6l.7-.7" strokeWidth="2" />
+              <div className="z-10 bg-brand-50/50 w-24 h-24 rounded-full flex items-center justify-center shadow-inner relative">
+                <style>{`
+                  @keyframes spin-cw {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                  }
+                  .gear-cw {
+                    transform-origin: 12px 10px;
+                    animation: spin-cw 4s linear infinite;
+                  }
+                `}</style>
+                <svg className="w-12 h-12 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  {/* Head Contour (Left Side Profile - Highly recognizable) */}
+                  <path 
+                    d="M15.5 21.5c0-1.5.5-3 1.5-4s1.8-3 1.8-6c0-5-3.3-8-7.3-8-4 0-5 2.5-5 4s.2 1.7.2 2c0 .3-.3.5-.5.8-0.4.5-1.9 1.2-1.9 1.7s1.5.7 2 .9c0.4.2-.1.6-.1.9s.3.7-.2 1.2c-0.5.5-.8 1-.5 1.5.3.5 2 1.3 4 1.5s.5 2 .5 3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {/* Single Centered Gear in Brain (Smaller & delicate) */}
+                  <g className="gear-cw">
+                    <circle cx="12" cy="10" r="2.2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    <circle cx="12" cy="10" r="0.6" fill="currentColor" />
+                    <path d="M12 7v.8M12 12.2v.8M9 10h.8M14.2 10h.8M9.84 7.84l.6.6M13.56 11.56l.6.6M9.84 12.16l.6-.6M13.56 8.44l.6-.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </g>
                 </svg>
               </div>
             </div>
