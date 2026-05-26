@@ -317,12 +317,18 @@ def analyze_cv(skills: list, profession: str) -> dict:
 
         user_points = (len(user_matched_critical) * WEIGHT_CRITICAL) + (len(user_matched_important) * WEIGHT_IMPORTANT) + (len(user_matched_supp) * WEIGHT_SUPPLEMENTARY)
         
-        # normalize score against a standard target threshold of 40 points
-        TARGET_POINTS = 40.0
-        
-        score_ratio = user_points / TARGET_POINTS
-        if score_ratio > 1.0:
-            score_ratio = 1.0
+        # normalize score against total weighted points of ALL required skills for this profession
+        # (matched + gap), so score truly reflects how much of the requirement is fulfilled
+        total_weight_required = (
+            len(cand_critical) * WEIGHT_CRITICAL +
+            len(cand_important) * WEIGHT_IMPORTANT +
+            len(cand_supp) * WEIGHT_SUPPLEMENTARY
+        )
+
+        if total_weight_required > 0:
+            score_ratio = user_points / total_weight_required
+        else:
+            score_ratio = 0.0
 
         # FALLBACK: Jika model menghasilkan prediksi kosong (semua prob < 0.2),
         # gunakan Knowledge Base (role_skill_mapping) untuk mengisi gap berdasarkan rank.
