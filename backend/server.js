@@ -37,3 +37,24 @@ sequelize
   .catch((err) => {
     console.log("Gagal terhubung ke database: ", err);
   });
+
+module.exports = app;
+
+if (process.env.NODE_ENV !== "production") {
+  sequelize
+    .sync()
+    .then(() => {
+      console.log("Database terhubung dan tabel berhasil disinkronkan");
+      app.listen(PORT, () => {
+        console.log(`Server berjalan pada http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.log("Gagal terhubung ke database: ", err);
+    });
+} else {
+  sequelize
+    .authenticate()
+    .then(() => console.log("Koneksi database berhasil (productio)"))
+    .catch((err) => console.error("Gagal koneksi database: ", err));
+}
