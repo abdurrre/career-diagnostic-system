@@ -250,6 +250,9 @@ export default function HomeView({
                 </>
               )}
             </motion.button>
+            <p className="max-w-2xl text-center text-[11px] sm:text-xs text-slate-400 font-sans leading-relaxed">
+              Catatan: Hasil analisis bersifat estimasi berbasis sistem AI dan data keterampilan yang tersedia. Hindari mengunggah CV yang memuat informasi sangat sensitif seperti nomor identitas, alamat lengkap, atau data finansial.
+            </p>
           </div>
         </motion.form>
       </section>

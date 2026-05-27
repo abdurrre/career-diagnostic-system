@@ -59,7 +59,7 @@ exports.scanCV = async (req, res) => {
     }
 
     // const { score, skill_analysis } = aiResponse.data;
-    const { profession_name, score, skill_analysis } = aiResponse.data;
+    const { score, skill_analysis } = aiResponse.data;
 
     // mencari description di database untuk memasukkannya ke dalam response ke frontend
     for (const item of skill_analysis) {
@@ -72,12 +72,13 @@ exports.scanCV = async (req, res) => {
     // response
     res.status(200).json({
       message: "Analisis CV berhasil diproses",
-      // extracted_text_preview: finalRawTextInput,
-      profession_name: profession_name,
+      extracted_text_preview: finalRawTextInput,
+      id_profession: profession.id,
+      profession_name: profession.name,
+      skill_analysis: skill_analysis, // data dari ai service
+      score: score, // data dari ai service
       // score_percentage: mockFinalScore,
       // skill_analysis: mockSkillAnalysis,
-      score: score, // -> tunggu service ai
-      skill_analysis: skill_analysis, // -> tunggu service ai
       // id_profession: profession.id,
     });
   } catch (error) {
@@ -88,7 +89,7 @@ exports.scanCV = async (req, res) => {
 // simpan history
 exports.saveHistory = async (req, res) => {
   try {
-    const { score, id_profession, skill_analysis } = req.body;
+    const { score, id_profession, profession_name, skill_analysis } = req.body;
     // contoh isi dari skill_analysis
     // {
     //   "score": 85.50,
@@ -116,22 +117,24 @@ exports.saveHistory = async (req, res) => {
         .json({ message: "Data analisis skill tidak valid" });
     }
 
-    for (const item of skill_analysis) {
-      const cleanName = item.name.toLowerCase().trim();
+    for (const skillItem of skill_analysis) {
+      const cleanName = skillItem.name.toLowerCase().trim();
       let skillData = await Skill.findOne({ where: { name: cleanName } });
 
       if (!skillData) {
         skillData = await Skill.create({
           name: cleanName,
-          description: item.description || 'Kesenjangan kemampuan keahlian yang terpetakan berdasarkan kebutuhan standar industri.'
+          description:
+            skillItem.description ||
+            "Kesenjangan kemampuan keahlian yang terpetakan berdasarkan kebutuhan standar industri.",
         });
       }
 
       historySkillData.push({
         id_history: newHistory.id,
         id_skill: skillData.id,
-        status: item.status,
-        category: item.category,
+        status: skillItem.status,
+        category: skillItem.category,
       });
     }
 
@@ -195,7 +198,7 @@ exports.chatWithAI = async (req, res) => {
       });
     } catch (aiError) {
       console.error(aiError);
-      
+
       // Jika AI Engine mengembalikan error spesifik (misal dari slowapi atau validation error)
       if (aiError.response) {
         return res.status(aiError.response.status).json(aiError.response.data);

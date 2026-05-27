@@ -15,7 +15,7 @@ export default function Toast({ showToast, setShowToast, toastMessage }) {
             <CheckCircle2 className="w-4.5 h-4.5" />
           </div>
           <div className="flex-grow space-y-0.5">
-            <h5 className="font-bold text-xs sm:text-sm font-outfit !text-white">Action Confirmed</h5>
+            <h5 className="font-bold text-xs sm:text-sm font-outfit !text-white">Notifikasi</h5>
             <p className="!text-slate-300 font-sans text-[11px] leading-relaxed">
               {toastMessage}
             </p>

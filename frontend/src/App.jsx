@@ -31,104 +31,10 @@ function App() {
   // Target professions state lists (Fetched dynamically or falls back to static seed)
   const [professionsList, setProfessionsList] = useState(defaultProfessions);
 
-  // Centralized History List state
-  const [historyList, setHistoryList] = useState([
-    {
-      id: 'hist-1',
-      role: 'Backend Developer',
-      score: 84,
-      fileName: 'CV_Naufal_Backend.pdf',
-      date: '24 May 2026',
-      skills: ["Node.js", "Express.js", "SQL", "PostgreSQL", "REST APIs", "Git", "Docker", "Database Design", "Communication"],
-      gaps: [
-        {
-          title: "Redis Caching",
-          tier: "CRITICAL",
-          description: "Profil Anda kurang memiliki pengalaman dengan database in-memory caching. Sangat penting untuk sistem konkurensi tinggi."
-        },
-        {
-          title: "Kubernetes",
-          tier: "IMPORTANT",
-          description: "Sangat krusial untuk orkestrasi microservices dan manajemen container pada skala produksi."
-        },
-        {
-          title: "GraphQL",
-          tier: "SUPPLEMENTARY",
-          description: "Meskipun REST API sudah sangat kuat, pemahaman GraphQL akan meningkatkan fleksibilitas arsitektur API Anda."
-        },
-        {
-          title: "CI/CD Pipeline Automation",
-          tier: "IMPORTANT",
-          description: "Pengalaman mengotomatiskan deployment dengan GitHub Actions atau GitLab CI sangat dicari industri modern."
-        },
-        {
-          title: "System Design Patterns",
-          tier: "CRITICAL",
-          description: "Kemampuan merancang arsitektur sistem skala besar yang andal dan toleran terhadap kegagalan."
-        }
-      ]
-    },
-    {
-      id: 'hist-2',
-      role: 'Frontend Developer',
-      score: 81,
-      fileName: 'CV_Naufal_Frontend.pdf',
-      date: '22 May 2026',
-      skills: ["React", "HTML/CSS", "JavaScript", "Tailwind CSS", "Vite", "TypeScript", "Responsive Design", "Git"],
-      gaps: [
-        {
-          title: "Next.js & SSR",
-          tier: "CRITICAL",
-          description: "Profil Anda berfokus pada aplikasi SPA standar. Pengetahuan tentang server-side rendering sangat penting di era modern."
-        },
-        {
-          title: "Cypress Testing",
-          tier: "IMPORTANT",
-          description: "Krusial untuk deployment aplikasi yang tangguh. Fokus pada mempelajari end-to-end testing secara otomatis."
-        },
-        {
-          title: "Web Accessibility (WCAG)",
-          tier: "SUPPLEMENTARY",
-          description: "Memahami kepatuhan aksesibilitas web dan markup semantik adalah keunggulan tambahan yang luar biasa."
-        },
-        {
-          title: "Global State Management (Zustand/Redux)",
-          tier: "IMPORTANT",
-          description: "Kemampuan mengelola state aplikasi skala besar yang kompleks secara efisien dan clean."
-        }
-      ]
-    },
-    {
-      id: 'hist-3',
-      role: 'Data Scientist',
-      score: 78,
-      fileName: 'CV_Naufal_DataSci.pdf',
-      date: '18 May 2026',
-      skills: ["Python", "SQL", "Data Visualization", "Machine Learning Basics", "Communication", "Project Management", "Agile Methodologies", "Pandas"],
-      gaps: [
-        {
-          title: "Deep Learning",
-          tier: "CRITICAL",
-          description: "Penting untuk peran lanjutan. Profil Anda kekurangan pengalaman dengan framework mendalam seperti PyTorch atau TensorFlow."
-        },
-        {
-          title: "MLOps Pipeline",
-          tier: "IMPORTANT",
-          description: "Krusial untuk menerapkan model ke lingkungan produksi. Pelajari Docker, Kubernetes, dan alat alur kerja ML."
-        },
-        {
-          title: "Cloud Machine Learning (AWS/GCP)",
-          tier: "SUPPLEMENTARY",
-          description: "Sertifikasi atau portofolio penerapan model pada infrastruktur cloud akan mendongkrak profil Anda secara signifikan."
-        },
-        {
-          title: "Large Language Models (LLM)",
-          tier: "CRITICAL",
-          description: "Kemampuan menerapkan teknik Retrieval-Augmented Generation (RAG) dan fine-tuning model bahasa besar di industri saat ini."
-        }
-      ]
-    }
-  ]);
+  const [rawProfessions, setRawProfessions] = useState([]);
+
+  // Centralized History List state (Initialized as empty to remove dummy data)
+  const [historyList, setHistoryList] = useState([]);
 
   // Main Form states
   const [selectedRole, setSelectedRole] = useState('');
@@ -163,6 +69,7 @@ function App() {
       .then(res => res.json())
       .then(data => {
         if (data && Array.isArray(data) && data.length > 0) {
+          setRawProfessions(data);
           setProfessionsList(data.map(p => p.name));
         }
       })
@@ -412,7 +319,7 @@ function App() {
   const handleDeleteRecord = (id) => {
     // Local remove
     setHistoryList(prev => prev.filter(item => item.id !== id));
-    setToastMessage("Record successfully removed from history.");
+    setToastMessage("Riwayat analisis berhasil dihapus.");
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3500);
   };
@@ -433,6 +340,10 @@ function App() {
         ...currentRoleData.gaps.map(g => ({ name: g.title.toLowerCase(), status: 'gap', category: g.tier.toLowerCase() }))
       ];
 
+      // Dapatkan ID profesi dinamis berdasarkan analyzedRole
+      const currentProfession = rawProfessions.find(p => p.name === analyzedRole);
+      const dynamicProfessionId = currentProfession ? currentProfession.id : 1;
+
       const response = await fetch(`${API_BASE_URL}/analysis/save`, {
         method: 'POST',
         headers: {
@@ -441,14 +352,14 @@ function App() {
         },
         body: JSON.stringify({
           score: matchScore,
-          id_profession: 1, // default fallback profession link ID
+          id_profession: dynamicProfessionId,
           skill_analysis: mappedSkills
         })
       });
 
       if (!response.ok) throw new Error("Server rejected save action");
 
-      setToastMessage("History successfully saved to backend database!");
+      setToastMessage("Riwayat analisis berhasil disimpan ke database.");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 4000);
 
@@ -456,28 +367,11 @@ function App() {
       fetchUserHistory();
 
     } catch (err) {
-      console.log("Vite database saver fail-safe: offline database. Saving to client local logs memory instead.", err);
-      
-      const exists = historyList.some(item => item.role === analyzedRole);
-      if (exists) {
-        setToastMessage("Results are already saved in your local history!");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3500);
-        return;
-      }
+      console.error("Gagal menyimpan riwayat ke database: ", err);
 
-      const newEntry = {
-        id: `hist-${Date.now()}`,
-        role: analyzedRole,
-        score: currentRoleData.matchScore,
-        fileName: cvFile ? cvFile.name : 'Uploaded_CV.pdf',
-        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-      };
-
-      setHistoryList(prev => [newEntry, ...prev]);
-      setToastMessage("Results successfully saved to your local Analysis History!");
+      setToastMessage("Gagal menyimpan riwayat ke database. Silakan coba beberapa saat lagi.");
       setShowToast(true);
-      setTimeout(() => setShowToast(false), 4000);
+      setTimeout(() => setShowToast(false), 4500);
     }
   };
 
@@ -542,7 +436,7 @@ function App() {
 
       setCurrentView('home');
       setActiveTab('Home');
-      setToastMessage(`Welcome back, ${authEmail}!`);
+      setToastMessage(`Selamat datang kembali, ${authEmail}!`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 4500);
 
@@ -551,22 +445,11 @@ function App() {
 
     } catch (err) {
       setAuthLoading(false);
-      console.log("Vite login loader fail-safe: auth server offline. Entering mock simulation login.", err);
-      
-      // Fail-safe simulation entry
-      localStorage.setItem('auth_token', 'mock_token_123');
-      localStorage.setItem('auth_email', authEmail);
-      setAuthToken('mock_token_123');
-      setLoggedInEmail(authEmail);
-
-      setCurrentView('home');
-      setActiveTab('Home');
-      setToastMessage(`Welcome back, ${authEmail}! (Offline Simulation Mode)`);
+      console.error("Gagal login ke backend:", err);
+      setAuthError(err.message || "Gagal login. Silakan coba beberapa saat lagi.");
+      setToastMessage(err.message || "Gagal login. Pastikan backend berjalan dan kredensial benar.");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 4500);
-
-      setAuthEmail('');
-      setAuthPassword('');
     }
   };
 
@@ -629,7 +512,7 @@ function App() {
     localStorage.removeItem('auth_email');
     setAuthToken('');
     setLoggedInEmail('');
-    setToastMessage("You have been signed out successfully.");
+    setToastMessage("Anda berhasil keluar dari akun.");
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3500);
     setCurrentView('home');

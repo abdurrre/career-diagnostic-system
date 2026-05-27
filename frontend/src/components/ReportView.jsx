@@ -93,6 +93,9 @@ export default function ReportView({
           <p className="text-sm sm:text-base text-slate-500 font-sans max-w-2xl">
             Berdasarkan CV yang Anda unggah dan persyaratan standar industri untuk peran <strong>{analyzedRole}</strong> saat ini.
           </p>
+          <p className="text-xs text-slate-400 font-sans max-w-2xl leading-relaxed">
+            Disclaimer: Skor dan rekomendasi ini adalah estimasi pendukung keputusan, bukan jaminan diterima kerja atau pengganti penilaian profesional dari perekrut.
+          </p>
         </div>
 
         {/* Action Buttons: Try Another & Save */}

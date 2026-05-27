@@ -184,6 +184,10 @@ export default function ChatWidget({ analyzedRole, currentRoleData, currentView 
               </div>
             )}
 
+            <div className="px-4 py-2 bg-amber-50/70 border-b border-amber-100 text-[10px] text-amber-700 font-sans leading-relaxed">
+              Asisten AI memberikan panduan umum berbasis hasil analisis. Jangan kirim data pribadi sensitif di dalam percakapan.
+            </div>
+
             {/* Message Area */}
             <div className="flex-grow p-4 overflow-y-auto space-y-4 bg-slate-50/50 scrollbar-thin">
               {messages.map((msg) => {
