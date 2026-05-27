@@ -5,8 +5,8 @@ import uuid
 import logging
 from typing import List, Optional
 from enum import Enum
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException, Request, Header, Depends
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from groq import Groq
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -32,6 +32,21 @@ limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="AI Engine - Career Diagnostic API", version="1.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/docs")
+
+# --- Security API Key Validation ---
+AI_ENGINE_API_KEY = os.getenv("AI_ENGINE_API_KEY")
+
+async def verify_api_key(x_api_key: str = Header(None)):
+    # Only enforce if AI_ENGINE_API_KEY is configured in environment/secrets
+    if AI_ENGINE_API_KEY and x_api_key != AI_ENGINE_API_KEY:
+        raise HTTPException(
+            status_code=403,
+            detail="Akses ditolak: API Key tidak valid atau tidak disertakan."
+        )
 
 # Groq Client 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -198,7 +213,7 @@ Skills Analysis details:
 """
 
 # Endpoint Utama: POST /api/diagnose
-@app.post("/api/diagnose")
+@app.post("/api/diagnose", dependencies=[Depends(verify_api_key)])
 async def diagnose_career(req: DiagnosticRequest):
     request_id = str(uuid.uuid4())
 
@@ -243,7 +258,7 @@ async def diagnose_career(req: DiagnosticRequest):
         )
 
 # Chatbot Endpoint: POST /api/chat
-@app.post("/api/chat")
+@app.post("/api/chat", dependencies=[Depends(verify_api_key)])
 @limiter.limit("10/minute")
 async def chat_with_assistant(req: ChatRequest, request: Request):
     request_id = str(uuid.uuid4())

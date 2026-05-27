@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+
+models/*.keras
+models/*.h5
+reports/
+
+data/dataset_ner_skills_bersih.jsonl
+data/final_ready_it_jobs.csv
+data/*.pkl

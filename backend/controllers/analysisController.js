@@ -46,6 +46,10 @@ exports.scanCV = async (req, res) => {
       aiResponse = await axios.post(process.env.AI_SCAN_SERVICE_URL, {
         raw_text: finalRawTextInput,
         target_profession,
+      }, {
+        headers: {
+          "X-API-Key": process.env.AI_ENGINE_API_KEY,
+        },
       });
     } catch (aiError) {
       return res.status(502).json({
@@ -184,6 +188,10 @@ exports.chatWithAI = async (req, res) => {
         profession_name,
         score,
         skill_analysis,
+      }, {
+        headers: {
+          "X-API-Key": process.env.AI_ENGINE_API_KEY,
+        },
       });
     } catch (aiError) {
       console.error(aiError);

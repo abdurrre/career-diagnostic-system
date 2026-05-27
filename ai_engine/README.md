@@ -1,3 +1,13 @@
+---
+title: Career Diagnostic AI Engine
+emoji: 🧠
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_file: app.py
+pinned: false
+---
+
 # 🧠 AI Engine - Career Diagnostic Brain
 
 Layanan API berbasis kecerdasan buatan (*AI Engine*) yang bertugas memproses data masukan teks, mengekstraksi informasi kualifikasi CV menggunakan algoritma Natural Language Processing (NLP), mencocokkannya dengan pedoman standar industri untuk profesi tertentu, serta menjalankan agen chatbot interaktif yang peka konteks.
