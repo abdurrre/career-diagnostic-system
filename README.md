@@ -23,62 +23,99 @@ graph TD
 
 ---
 
-## 🛠️ Persyaratan Sistem & Instalasi
+# 🚀 Langkah Instalasi & Menjalankan Proyek
 
-Pastikan komputer Anda telah terinstal **Node.js (v18+)** dan **Python (3.9+)**.
+Pastikan komputer Anda telah terinstal:
 
-### 1. AI Engine (`ai_engine/`)
+- **Node.js v18+**
+- **Python 3.9+**
+- **Git**
 
-Mesin pemroses teks NLP dan agen cerdas chatbot.
+---
+
+## 1️⃣ Clone Repository
+
+```bash
+git clone <repository-url>
+cd <nama-folder-project>
+```
+
+## 2️⃣ Menjalankan AI Engine (`ai_engine/`)
+
+AI Engine bertanggung jawab untuk proses NLP, analisis CV, ekstraksi skill, dan chatbot AI.
 
 ```bash
 cd ai_engine
-# Jalankan virtual environment (opsional)
-python -m venv venv
-./venv/Scripts/activate # Windows
 
-# Instal dependensi
+# Membuat Virtual Environment
+python -m venv venv
+
+# Aktivasi Virtual Environment (Windows)
+venv\Scripts\activate
+
+# Install Dependencies
 pip install -r requirements.txt
 
-# Jalankan server
+# Menjalankan FastAPI Server
 cd src
 uvicorn api:app --reload
 ```
 
-_Layanan berjalan pada `http://localhost:8000`_
+📍 AI Engine berjalan di:
 
-### 2. Backend Gateway (`backend/`)
+```txt
+http://localhost:8000
+```
 
-Gerbang API utama dan persisten database.
+---
+
+## 3️⃣ Menjalankan Backend Gateway (`backend/`)
+
+Backend berfungsi sebagai API Gateway, autentikasi JWT, database persistence, dan penghubung frontend dengan AI Engine.
 
 ```bash
 cd backend
-# Konfigurasi Environment
-cp .env.example .env # Sesuaikan jika diperlukan
 
-# Instal dependensi & jalankan database migrations/seeding
+# Copy file environment
+cp .env.example .env
+
+# Install Dependencies
 npm install
 
-# Jalankan server pengembangan
+# Menjalankan Seeder Database
+npx sequelize-cli db:seed:all
+
+# Menjalankan Development Server
 npm run dev
 ```
 
-_Layanan berjalan pada `http://localhost:5000`_
+📍 Backend berjalan di:
 
-### 3. Frontend Dashboard (`frontend/`)
+```txt
+http://localhost:5000
+```
 
-Antarmuka pengguna premium.
+---
+
+## 4️⃣ Menjalankan Frontend Dashboard (`frontend/`)
+
+Frontend menggunakan Vite + React untuk menyediakan antarmuka pengguna modern dan interaktif.
 
 ```bash
 cd frontend
-# Instal dependensi
+
+# Install Dependencies
 npm install
 
-# Jalankan server pengembangan Vite
+# Menjalankan Vite Development Server
 npm run dev
 ```
 
-_Layanan berjalan pada `http://localhost:5173`_
+📍 Frontend berjalan di:
+
+```txt
+http://localhost:5173
+```
 
 ---
 

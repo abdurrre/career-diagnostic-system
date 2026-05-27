@@ -10,6 +10,7 @@ __pycache__/
 *.py[cod]
 
 # Data & Models (Jangan push file gede!)
+ai_engine/reports/*
 ai_engine/data/
 ai_engine/models/*.keras
 ai_engine/models/*.h5

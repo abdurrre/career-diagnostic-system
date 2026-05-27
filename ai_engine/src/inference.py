@@ -4,64 +4,31 @@ import pickle
 import numpy as np
 import tensorflow as tf
 import re
+import math
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from custom_metrics import weighted_binary_crossentropy
 from architectures import GapModel, NERModel
-from skill_normalizer import normalize_skills
-
-SKILL_ALIASES = {
-    # AI / ML
-    "artificial intelligence": "ai",
-    "artificial intelligence (ai)": "ai",
-    "ai/ml": "ai",
-    
-    # Cloud Services
-    "amazon web services": "aws",
-    "amazon web services (aws)": "aws",
-    "google cloud platform": "gcp",
-    "google cloud": "gcp",
-    
-    # NLP / CV
-    "natural language processing": "nlp",
-    "cv": "computer vision",
-    
-    # Languages & Frameworks
-    "js": "javascript",
-    "ts": "typescript",
-    "ml": "machine learning",
-    "dl": "deep learning",
-    "k8s": "kubernetes",
-    "html5": "html",
-    "css3": "css",
-    "postgres": "postgresql",
-    "torch": "pytorch",
-    "tf": "tensorflow",
-    
-    # C/C++
-    "c": "c/c++",
-    "c++": "c/c++",
-    
-    # Frontend / UI / UX
-    "react js": "react",
-    "react.js": "react",
-    "reactjs": "react",
-    "node js": "node.js",
-    "nodejs": "node.js",
-    "vue js": "vue.js",
-    "vuejs": "vue.js",
-    "ui": "ui/ux",
-    "ux": "ui/ux",
-    "ux/ui": "ui/ux",
-    "ui/ux design": "ui/ux",
-    "rn": "react native",
-    
-    # Databases & others
-    "database": "db",
-}
+from skill_aliases import SKILL_ALIASES, SKILL_COVERAGE
 
 def get_standard_skill(skill_name: str) -> str:
     clean_name = skill_name.lower().strip()
     return SKILL_ALIASES.get(clean_name, clean_name)
+
+
+def get_matchable_skills(skill_name: str) -> set:
+    standard_skill = get_standard_skill(skill_name)
+    covered_skills = {
+        get_standard_skill(covered_skill)
+        for covered_skill in SKILL_COVERAGE.get(standard_skill, [])
+    }
+    return {standard_skill, *covered_skills}
+
+
+def expand_matchable_skills(skills: set) -> set:
+    expanded = set()
+    for skill in skills:
+        expanded.update(get_matchable_skills(skill))
+    return expanded
 
 def resolve_profession(profession: str) -> str:
     """Case-insensitive matching terhadap daftar profesi yang dikenal sistem."""
@@ -72,6 +39,93 @@ def resolve_profession(profession: str) -> str:
         if cls.lower() == profession_stripped.lower():
             return cls
     return profession_stripped
+
+SCORING_SKILL_LIMIT = 20
+WEIGHT_CRITICAL = 3.0
+WEIGHT_IMPORTANT = 2.0
+WEIGHT_SUPPLEMENTARY = 1.0
+
+
+def dedupe_aliased_skills(skills: list) -> list:
+    """Normalize aliases and deduplicate while preserving rank/order."""
+    seen = set()
+    deduped = []
+    for skill in skills:
+        canonical = get_standard_skill(str(skill))
+        if canonical and canonical not in seen:
+            seen.add(canonical)
+            deduped.append(canonical)
+    return deduped
+
+
+def get_ranked_role_skills(profession: str) -> list:
+    ranked_skills = role_skill_mapping.get(profession) or knowledge_base.get(profession, [])
+    return dedupe_aliased_skills(ranked_skills)
+
+
+def get_gap_model_probabilities(profession: str) -> dict:
+    if not GAP_MODEL:
+        return {}
+
+    prof_id = job_encoder.transform([profession])[0]
+    pred_probs = GAP_MODEL.predict(np.array([prof_id]), verbose=0)[0]
+
+    aliased_probs = {}
+    for i, prob in enumerate(pred_probs):
+        aliased_skill = get_standard_skill(SKILL_VOCAB[i])
+        aliased_probs[aliased_skill] = max(float(prob), aliased_probs.get(aliased_skill, 0.0))
+
+    return aliased_probs
+
+
+def get_skill_category(index: int, total: int) -> str:
+    critical_cutoff = max(1, math.ceil(total * 0.20))
+    important_cutoff = max(critical_cutoff, math.ceil(total * 0.50))
+
+    if index < critical_cutoff:
+        return "critical"
+    if index < important_cutoff:
+        return "important"
+    return "supplementary"
+
+
+def get_category_weight(category: str) -> float:
+    if category == "critical":
+        return WEIGHT_CRITICAL
+    if category == "important":
+        return WEIGHT_IMPORTANT
+    return WEIGHT_SUPPLEMENTARY
+
+
+def clamp_score(score: float) -> float:
+    return min(max(score, 0.0), 1.0)
+
+
+def build_gap_requirements(profession: str) -> list:
+    ranked_role_skills = get_ranked_role_skills(profession)
+    gap_probs = get_gap_model_probabilities(profession)
+
+    if gap_probs:
+        role_rank = {skill: idx for idx, skill in enumerate(ranked_role_skills)}
+        candidate_skills = ranked_role_skills or sorted(gap_probs.keys())
+        candidate_skills = sorted(
+            candidate_skills,
+            key=lambda skill: (-gap_probs.get(skill, 0.0), role_rank.get(skill, len(role_rank)))
+        )
+    else:
+        candidate_skills = ranked_role_skills
+
+    candidate_skills = candidate_skills[:SCORING_SKILL_LIMIT]
+    total = len(candidate_skills)
+
+    return [
+        {
+            "skill": skill,
+            "category": get_skill_category(index, total),
+            "probability": gap_probs.get(skill, 0.0),
+        }
+        for index, skill in enumerate(candidate_skills)
+    ]
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 ARTIFACTS_DIR = os.path.join(BASE_DIR, 'data')
@@ -222,166 +276,63 @@ def analyze_cv(skills: list, profession: str) -> dict:
 
     # Normalize aliases before matching
     user_skills_aliased = {get_standard_skill(s) for s in skills_cleaned}
+    user_skills_matchable = expand_matchable_skills(user_skills_aliased)
     required_aliased = {get_standard_skill(s) for s in required_cleaned}
     
     print("Extracted Skills:", list(skills_cleaned))
     print("Required Skills for Profession:", list(required_cleaned))
 
-    matched = sorted(user_skills_aliased & required_aliased)
+    matched = sorted(user_skills_matchable & required_aliased)
     print("Matched Skills:", matched)
-
-    known_user = {s for s in user_skills_aliased if s in SKILL_VOCAB}
-    known_req = {s for s in required_aliased if s in SKILL_VOCAB}
 
     critical, important, supplementary = [], [], []
     matched_categories = {}  # track category for each matched skill
-    total_weight_required = 0.0
-    user_acquired_weight = 0.0
+    gap_requirements = build_gap_requirements(profession)
 
-    WEIGHT_CRITICAL = 3.0
-    WEIGHT_IMPORTANT = 2.0
-    WEIGHT_SUPPLEMENTARY = 1.0
+    if not gap_requirements:
+        fallback_requirements = sorted(required_aliased)[:SCORING_SKILL_LIMIT]
+        gap_requirements = [
+            {
+                "skill": skill,
+                "category": get_skill_category(index, len(fallback_requirements)),
+                "probability": 0.0,
+            }
+            for index, skill in enumerate(fallback_requirements)
+        ]
 
-    if GAP_MODEL:
-        prof_id = job_encoder.transform([profession])[0]
-        pred_probs = GAP_MODEL.predict(np.array([prof_id]), verbose=0)[0]
+    gap_requirement_set = {item["skill"] for item in gap_requirements}
+    user_points = 0.0
+    total_points = 0.0
 
-        # Deduplicate aliased skills by keeping the max probability
-        aliased_probs = {}
-        for i, prob in enumerate(pred_probs):
-            raw_skill_name = SKILL_VOCAB[i]
-            aliased_skill = get_standard_skill(raw_skill_name)
-            if aliased_skill in aliased_probs:
-                aliased_probs[aliased_skill] = max(aliased_probs[aliased_skill], prob)
-            else:
-                aliased_probs[aliased_skill] = prob
+    for requirement in gap_requirements:
+        required_skill = requirement["skill"]
+        category = requirement["category"]
+        weight = get_category_weight(category)
+        total_points += weight
 
-        role_kb_raw = role_skill_mapping.get(profession, [])
-        role_kb_aliased = {get_standard_skill(s) for s in role_kb_raw}
-
-        cand_critical = []
-        cand_important = []
-        cand_supp = []
-
-        for aliased_skill, prob in aliased_probs.items():
-            # filter predicted skills based on the top-n knowledge base mapping
-            if role_kb_aliased and aliased_skill not in role_kb_aliased:
-                continue
-
-            if prob >= 0.8:
-                cand_critical.append((aliased_skill, prob))
-            elif prob >= 0.4:
-                cand_important.append((aliased_skill, prob))
-            else:
-                cand_supp.append((aliased_skill, prob))
-
-        # Ensure any skills in the profession's knowledge base that are not in the model vocabulary are captured
-        processed_skills = set(aliased_probs.keys())
-        for kb_skill in role_kb_aliased:
-            if kb_skill not in processed_skills:
-                cand_supp.append((kb_skill, 0.0))
-
-        # sort predicted skill recommendations by confidence (no capping limits to show all skills)
-        cand_critical.sort(key=lambda x: x[1], reverse=True)
-        cand_important.sort(key=lambda x: x[1], reverse=True)
-        cand_supp.sort(key=lambda x: x[1], reverse=True)
-
-        # separate acquired skills from gap categories
-        for skill, prob in cand_critical:
-            if skill in user_skills_aliased:
-                matched.append(skill)
-                matched_categories[skill] = "critical"
-            else:
-                critical.append(skill)
-                
-        for skill, prob in cand_important:
-            if skill in user_skills_aliased:
-                matched.append(skill)
-                if skill not in matched_categories:
-                    matched_categories[skill] = "important"
-            else:
-                important.append(skill)
-                
-        for skill, prob in cand_supp:
-            if skill in user_skills_aliased:
-                matched.append(skill)
-                if skill not in matched_categories:
-                    matched_categories[skill] = "supplementary"
-            else:
-                supplementary.append(skill)
-
-        # calculate dynamic weighted scoring based on importance levels
-        user_matched_critical = [s for s, p in cand_critical if s in user_skills_aliased]
-        user_matched_important = [s for s, p in cand_important if s in user_skills_aliased]
-        user_matched_supp = [s for s, p in cand_supp if s in user_skills_aliased]
-
-        user_points = (len(user_matched_critical) * WEIGHT_CRITICAL) + (len(user_matched_important) * WEIGHT_IMPORTANT) + (len(user_matched_supp) * WEIGHT_SUPPLEMENTARY)
-        
-        # normalize score against total weighted points of ALL required skills for this profession
-        # (matched + gap), so score truly reflects how much of the requirement is fulfilled
-        total_weight_required = (
-            len(cand_critical) * WEIGHT_CRITICAL +
-            len(cand_important) * WEIGHT_IMPORTANT +
-            len(cand_supp) * WEIGHT_SUPPLEMENTARY
-        )
-
-        if total_weight_required > 0:
-            score_ratio = user_points / total_weight_required
+        if required_skill in user_skills_matchable:
+            matched.append(required_skill)
+            matched_categories[required_skill] = category
+            user_points += weight
+        elif category == "critical":
+            critical.append(required_skill)
+        elif category == "important":
+            important.append(required_skill)
         else:
-            score_ratio = 0.0
+            supplementary.append(required_skill)
 
-        # FALLBACK: Jika model menghasilkan prediksi kosong (semua prob < 0.2),
-        # gunakan Knowledge Base (role_skill_mapping) untuk mengisi gap berdasarkan rank.
-        total_model_candidates = len(cand_critical) + len(cand_important) + len(cand_supp)
-        if total_model_candidates == 0:
-            print("WARNING: Model predictions all below threshold. Falling back to KB-based gap.")
-            role_kb_raw = role_skill_mapping.get(profession, [])
-            role_kb_list = [get_standard_skill(s) for s in role_kb_raw]
-            # Deduplicate sambil menjaga urutan
-            seen = set()
-            role_kb_unique = []
-            for s in role_kb_list:
-                if s not in seen:
-                    seen.add(s)
-                    role_kb_unique.append(s)
+    # Scoring is based only on GapModel-derived requirements. Extra valid
+    # matches stay visible but cannot inflate the score beyond the gap basis.
+    for skill in matched:
+        if skill not in gap_requirement_set:
+            matched_categories.setdefault(skill, "supplementary")
 
-            total_kb = len(role_kb_unique)
-            cutoff_critical = int(total_kb * 0.20)     # Top 20%
-            cutoff_important = int(total_kb * 0.50)    # Next 30%
-
-            for idx, skill in enumerate(role_kb_unique):
-                if skill in user_skills_aliased:
-                    matched.append(skill)
-                    if idx < cutoff_critical:
-                        matched_categories[skill] = "critical"
-                    elif idx < cutoff_important:
-                        matched_categories.setdefault(skill, "important")
-                    else:
-                        matched_categories.setdefault(skill, "supplementary")
-                else:
-                    if idx < cutoff_critical:
-                        critical.append(skill)
-                    elif idx < cutoff_important:
-                        important.append(skill)
-                    else:
-                        supplementary.append(skill)
-
-            # Hitung skor berdasarkan jumlah skill yang cocok terhadap total KB
-            if total_kb > 0:
-                score_ratio = len([s for s in role_kb_unique if s in user_skills_aliased]) / total_kb
-            else:
-                score_ratio = 0.0
-
+    if total_points > 0:
+        score_ratio = clamp_score(user_points / total_points)
     else:
-        # fallback rule-based math scoring when the gap model is not available
-        missing_skills = sorted(required_aliased - user_skills_aliased)
-        important = missing_skills
-        
-        if len(required_aliased) > 0:
-            score_ratio = len(matched) / len(required_aliased)
-        else:
-            score_ratio = 0.0
-        print(f"Fallback scoring: {len(matched)}/{len(required_aliased)} = {score_ratio:.2%}")
+        score_ratio = 0.0
+
+    print(f"Gap-based scoring: {user_points:.1f}/{total_points:.1f} = {score_ratio:.2%}")
 
     final_score_percentage = round(score_ratio * 100, 2)
 
