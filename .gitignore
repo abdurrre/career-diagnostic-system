@@ -9,9 +9,14 @@ ENV/
 __pycache__/
 *.py[cod]
 
-# Data & Models (Jangan push file gede!)
-ai_engine/reports/*
-ai_engine/data/
+# AI Engine reports/generated files
+ai_engine/reports/
+
+# AI Engine training/raw datasets, not needed at runtime
+ai_engine/data/dataset_ner_skills_bersih.jsonl
+ai_engine/data/final_ready_it_jobs.csv
+
+# AI model files are downloaded from Hugging Face at deploy/startup
 ai_engine/models/*.keras
 ai_engine/models/*.h5
 data_science/raw_data/

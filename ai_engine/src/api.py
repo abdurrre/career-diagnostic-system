@@ -34,7 +34,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Groq Client 
-GROQ_API_KEY = None
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 backend_env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "backend", ".env"))
 if os.path.exists(backend_env_path):
     with open(backend_env_path, "r", encoding="utf-8") as f:

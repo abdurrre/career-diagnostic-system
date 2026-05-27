@@ -1,0 +1,9 @@
+{
+    "vocab_size": 4054,
+    "num_professions": 7,
+    "num_skills": 6820,
+    "max_length": 128,
+    "ner_vocab_size": 103637,
+    "ner_max_length": 24040,
+    "ner_num_classes": 3
+}
