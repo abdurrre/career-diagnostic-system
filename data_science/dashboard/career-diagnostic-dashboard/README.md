@@ -6,6 +6,7 @@
 `streamlit run dashboard.py`
 
 Dashboard akan terbuka otomatis di browser: `http://localhost:8501`
+Deploy si streamlit : `https://career-diagnostic-dashboard.streamlit.app/`
 
 ## Fitur Dashboard
 ### Halaman 1 - Overview Industri
