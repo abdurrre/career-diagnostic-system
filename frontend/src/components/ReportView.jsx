@@ -6,7 +6,8 @@ import {
   CheckCircle2, 
   Award, 
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 
 const getFeedbackMessage = (score) => {
@@ -61,7 +62,8 @@ export default function ReportView({
   analyzedRole,
   currentRoleData,
   handleTryAnother,
-  handleSaveResults
+  handleSaveResults,
+  saveLoading
 }) {
   if (currentView !== 'report') {
     return null;
@@ -111,10 +113,17 @@ export default function ReportView({
           
           <button 
             onClick={handleSaveResults}
-            className="px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center gap-2"
+            disabled={saveLoading}
+            className={`px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center gap-2 active:scale-[0.98] ${
+              saveLoading ? 'opacity-85 cursor-not-allowed' : ''
+            }`}
           >
-            <Bookmark className="w-4 h-4" />
-            Simpan Hasil
+            {saveLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Bookmark className="w-4 h-4" />
+            )}
+            <span>{saveLoading ? 'Menyimpan...' : 'Simpan Hasil'}</span>
           </button>
         </div>
       </div>

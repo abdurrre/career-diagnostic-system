@@ -58,6 +58,7 @@ function App() {
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   // Toast Notification states
   const [showToast, setShowToast] = useState(false);
@@ -348,6 +349,7 @@ function App() {
       return;
     }
 
+    setSaveLoading(true);
     try {
       const matchScore = currentRoleData.matchScore;
       const mappedSkills = [
@@ -387,6 +389,8 @@ function App() {
       setToastMessage("Gagal menyimpan riwayat ke database. Silakan coba beberapa saat lagi.");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 4500);
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -600,6 +604,7 @@ function App() {
           currentRoleData={currentRoleData}
           handleTryAnother={handleTryAnother}
           handleSaveResults={handleSaveResults}
+          saveLoading={saveLoading}
         />
 
         {/* VIEW 3: DYNAMIC FULL-SCREEN AUTH VIEWS (CAPTCHA Disabled) */}
