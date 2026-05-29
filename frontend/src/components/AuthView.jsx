@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
@@ -8,7 +9,9 @@ import {
   Loader2, 
   ArrowRight, 
   ArrowLeft,
-  CheckCircle2
+  CheckCircle2,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import authVisualImg from '../assets/auth_visual.png';
 
@@ -30,6 +33,15 @@ export default function AuthView({
   triggerLoginView,
   triggerRegisterView
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Reset visibility states when switching views (e.g. login <-> register)
+  useEffect(() => {
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  }, [currentView]);
+
   if (currentView !== 'login' && currentView !== 'register') {
     return null;
   }
@@ -158,16 +170,28 @@ export default function AuthView({
               </div>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={authPassword}
                   onChange={(e) => setAuthPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="premium-input pl-11 text-sm font-sans"
+                  className="premium-input pl-11 pr-11 text-sm font-sans"
                   required
                 />
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                   <Lock className="w-4.5 h-4.5" />
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none flex items-center justify-center cursor-pointer"
+                  aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4.5 h-4.5" />
+                  ) : (
+                    <Eye className="w-4.5 h-4.5" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -183,16 +207,28 @@ export default function AuthView({
                 </label>
                 <div className="relative">
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     value={authConfirmPassword}
                     onChange={(e) => setAuthConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="premium-input pl-11 text-sm font-sans"
+                    className="premium-input pl-11 pr-11 text-sm font-sans"
                     required
                   />
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                     <Lock className="w-4.5 h-4.5" />
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none flex items-center justify-center cursor-pointer"
+                    aria-label={showConfirmPassword ? "Sembunyikan konfirmasi kata sandi" : "Tampilkan konfirmasi kata sandi"}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4.5 h-4.5" />
+                    ) : (
+                      <Eye className="w-4.5 h-4.5" />
+                    )}
+                  </button>
                 </div>
               </motion.div>
             )}

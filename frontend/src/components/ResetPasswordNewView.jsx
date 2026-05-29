@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, User, Lock, AlertCircle, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Sparkles, User, Lock, AlertCircle, Loader2, ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import authVisualImg from '../assets/auth_visual.png';
 
 export default function ResetPasswordNewView({
@@ -10,6 +10,8 @@ export default function ResetPasswordNewView({
 }) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -120,16 +122,28 @@ export default function ResetPasswordNewView({
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showNewPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="premium-input pl-11 text-sm font-sans"
+                  className="premium-input pl-11 pr-11 text-sm font-sans"
                   required
                 />
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                   <Lock className="w-4.5 h-4.5" />
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none flex items-center justify-center cursor-pointer"
+                  aria-label={showNewPassword ? "Sembunyikan kata sandi baru" : "Tampilkan kata sandi baru"}
+                >
+                  {showNewPassword ? (
+                    <EyeOff className="w-4.5 h-4.5" />
+                  ) : (
+                    <Eye className="w-4.5 h-4.5" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -140,16 +154,28 @@ export default function ResetPasswordNewView({
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="premium-input pl-11 text-sm font-sans"
+                  className="premium-input pl-11 pr-11 text-sm font-sans"
                   required
                 />
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                   <Lock className="w-4.5 h-4.5" />
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none flex items-center justify-center cursor-pointer"
+                  aria-label={showConfirmPassword ? "Sembunyikan konfirmasi kata sandi" : "Tampilkan konfirmasi kata sandi"}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4.5 h-4.5" />
+                  ) : (
+                    <Eye className="w-4.5 h-4.5" />
+                  )}
+                </button>
               </div>
             </div>
 
