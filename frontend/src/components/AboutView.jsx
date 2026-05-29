@@ -47,7 +47,7 @@ export default function AboutView({ currentView, handleTryAnother }) {
             onClick={handleTryAnother}
             className="text-brand-600 hover:text-brand-700 font-bold text-xs flex items-center gap-1.5 hover:underline font-outfit self-start"
           >
-            <span>Pindai CV Anda</span>
+            <span>Scan CV Anda</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

@@ -253,7 +253,7 @@ export default function HistoryView({
                 <p className="text-sm text-slate-400 font-sans leading-relaxed">
                   {searchQuery 
                     ? `Tidak ada arsip analisis yang cocok dengan "${searchQuery}". Coba gunakan kata kunci pencarian lain.`
-                    : 'Pindai CV Anda pada profesi target untuk memetakan keselarasan dan melihat riwayat Anda di sini.'}
+                    : 'Scan CV Anda pada profesi target untuk memetakan keselarasan dan melihat riwayat Anda di sini.'}
                 </p>
               </div>
               <div>

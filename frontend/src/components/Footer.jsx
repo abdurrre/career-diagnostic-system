@@ -11,15 +11,16 @@ export default function Footer({ currentView, handleTryAnother, triggerNotFoundV
         {/* Logo & Copyright */}
         <div className="flex flex-col items-center md:items-start gap-2">
           <div className="flex items-center gap-2 cursor-pointer" onClick={handleTryAnother}>
-            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
+            {/* <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            </div> */}
+            <img src="/favicon.svg" alt="SkillPath AI Logo" className="h-8 w-auto" />
             <span className="text-lg font-bold font-outfit bg-gradient-to-r from-brand-900 to-brand-700 bg-clip-text text-transparent">
               SkillPath AI
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1 font-sans text-center md:text-left">
-            &copy; 2026 SkillPath AI. Pemberdayaan potensi karier lewat analisis presisi.
+            &copy; 2026 SkillPath AI. Pemberdayaan potensi karier lewat analisis berbasis AI.
           </p>
         </div>
 

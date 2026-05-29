@@ -24,9 +24,10 @@ export default function Navbar({
           onClick={() => handleTabChange('Home')}
           className="flex items-center gap-2 cursor-pointer"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
+          {/* <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
             <Sparkles className="w-5 h-5 text-white animate-pulse" />
-          </div>
+          </div> */}
+          <img src="/favicon.svg" alt="SkillPath AI Logo" className="h-8 w-auto" />
           <span className="text-xl font-bold font-outfit bg-gradient-to-r from-brand-900 to-brand-700 bg-clip-text text-transparent">
             SkillPath AI
           </span>

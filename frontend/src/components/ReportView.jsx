@@ -5,7 +5,8 @@ import {
   Bookmark, 
   CheckCircle2, 
   Award, 
-  TrendingUp 
+  TrendingUp,
+  AlertCircle
 } from 'lucide-react';
 
 const getFeedbackMessage = (score) => {
@@ -91,7 +92,7 @@ export default function ReportView({
           
           {/* Dynamically bound descriptive subtitle */}
           <p className="text-sm sm:text-base text-slate-500 font-sans max-w-2xl">
-            Berdasarkan CV yang Anda unggah dan persyaratan standar industri untuk peran <strong>{analyzedRole}</strong> saat ini.
+            Berdasarkan CV yang Anda upload dan persyaratan standar industri untuk peran <strong>{analyzedRole}</strong> saat ini.
           </p>
           <p className="text-xs text-slate-400 font-sans max-w-2xl leading-relaxed">
             Disclaimer: Skor dan rekomendasi ini adalah estimasi pendukung keputusan, bukan jaminan diterima kerja atau pengganti penilaian profesional dari perekrut.
@@ -200,8 +201,8 @@ export default function ReportView({
           </div>
 
           <div className="bg-slate-50 rounded-xl p-4 text-xs text-slate-400 font-sans flex items-center gap-2">
-            <Award className="w-4 h-4 text-brand-500 flex-shrink-0" />
-            <span>Keahlian ini terpetakan langsung sebagai indikator positif pada sistem pemindaian rekrutmen perusahaan.</span>
+            <AlertCircle className="w-4 h-4 text-brand-500 flex-shrink-0" />
+            <span>Catatan: Hasil analisis ini bersifat estimasi berbasis AI dan tidak dijamin 100% akurat. Gunakan sebagai referensi tambahan dalam pengembangan karier Anda.</span>
           </div>
         </div>
 

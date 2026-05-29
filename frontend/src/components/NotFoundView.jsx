@@ -26,9 +26,10 @@ export default function NotFoundView({ currentView, handleTryAnother }) {
           onClick={handleTryAnother}
           className="flex items-center justify-center gap-2 cursor-pointer opacity-80 hover:opacity-100 transition-opacity"
         >
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-50 flex items-center justify-center">
+          {/* <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-50 flex items-center justify-center">
             <Sparkles className="w-3.5 h-3.5 text-white" />
-          </div>
+          </div> */}
+          <img src="/favicon.svg" alt="SkillPath AI Logo" className="h-8 w-auto" />
           <span className="text-sm font-bold font-outfit bg-gradient-to-r from-brand-900 to-brand-700 bg-clip-text text-transparent">
             SkillPath AI
           </span>

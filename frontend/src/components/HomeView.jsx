@@ -64,7 +64,7 @@ export default function HomeView({
           transition={{ duration: 0.6, delay: 0.15 }}
           className="text-base sm:text-lg text-slate-500 leading-relaxed font-sans max-w-3xl mx-auto"
         >
-          Unggah CV Anda, pilih profesi impian, dan biarkan sistem AI kami merancang peta jalan karier khusus untuk Anda. Analisis presisi untuk profesional ambisius.
+          Upload CV Anda, pilih profesi impian, dan biarkan sistem AI kami merancang peta jalan karier khusus untuk Anda. Analisis presisi untuk profesional ambisius.
         </motion.p>
       </section>
 
@@ -115,7 +115,7 @@ export default function HomeView({
                       <Upload className="w-8 h-8" />
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-xl font-bold font-outfit text-slate-800">Unggah CV Anda</h3>
+                      <h3 className="text-xl font-bold font-outfit text-slate-800">Upload CV Anda</h3>
                       <p className="text-sm text-slate-400 font-sans max-w-xs mx-auto">
                         Seret dan lepas file PDF di sini, atau <span className="text-brand-600 font-medium hover:underline">klik untuk memilih file</span>.
                       </p>
@@ -251,7 +251,7 @@ export default function HomeView({
               )}
             </motion.button>
             <p className="max-w-2xl text-center text-[11px] sm:text-xs text-slate-400 font-sans leading-relaxed">
-              Catatan: Hasil analisis bersifat estimasi berbasis sistem AI dan data keterampilan yang tersedia. Hindari mengunggah CV yang memuat informasi sangat sensitif seperti nomor identitas, alamat lengkap, atau data finansial.
+              Catatan: Hasil analisis bersifat estimasi berbasis sistem AI dan data keterampilan yang tersedia. Hindari mengupload CV yang memuat informasi sangat sensitif seperti nomor identitas, alamat lengkap, atau data finansial.
             </p>
           </div>
         </motion.form>
@@ -295,7 +295,7 @@ export default function HomeView({
               </div>
               <div className="border border-slate-100 bg-slate-50/50 p-4 rounded-xl">
                 <span className="text-2xl font-black text-brand-600 font-outfit">Real-time</span>
-                <p className="text-xs text-slate-400 mt-1 font-sans">Peta Jalan Keahlian</p>
+                <p className="text-xs text-slate-400 mt-1 font-sans">Skill Path</p>
               </div>
             </div>
           </div>

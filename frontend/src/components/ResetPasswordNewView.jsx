@@ -82,9 +82,10 @@ export default function ResetPasswordNewView({
           className="hidden md:flex md:w-1/2 bg-slate-900 bg-cover bg-center p-10 flex-col justify-between relative text-white border-r border-slate-100/10"
         >
           <div onClick={handleTryAnother} className="flex items-center gap-2.5 cursor-pointer z-10">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
+            {/* <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
               <Sparkles className="w-4.5 h-4.5 text-white" />
-            </div>
+            </div> */}
+            <img src="/favicon.svg" alt="SkillPath AI Logo" className="h-8 w-auto" />
             <span className="text-lg font-bold font-outfit text-white">SkillPath AI</span>
           </div>
 
@@ -116,9 +117,10 @@ export default function ResetPasswordNewView({
         <div className="w-full md:w-1/2 p-8 sm:p-12 md:p-14 flex flex-col justify-between space-y-8 bg-white">
           
           <div className="flex md:hidden items-center gap-2 cursor-pointer pb-2 border-b border-slate-50" onClick={handleTryAnother}>
-            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
+            {/* <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            </div> */}
+            <img src="/favicon.svg" alt="SkillPath AI Logo" className="h-8 w-auto" />
             <span className="text-base font-bold font-outfit bg-gradient-to-r from-brand-900 to-brand-700 bg-clip-text text-transparent">
               SkillPath AI
             </span>

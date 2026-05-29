@@ -68,9 +68,10 @@ export default function AuthView({
             onClick={handleTryAnother}
             className="flex items-center gap-2.5 cursor-pointer z-10"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
+            {/* <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
               <Sparkles className="w-4.5 h-4.5 text-white" />
-            </div>
+            </div> */}
+            <img src="/favicon.svg" alt="SkillPath AI Logo" className="h-8 w-auto" />
             <span className="text-lg font-bold font-outfit text-white">
               SkillPath AI
             </span>
@@ -107,9 +108,10 @@ export default function AuthView({
           
           {/* Logo top anchor for mobile responsive view */}
           <div className="flex md:hidden items-center gap-2 cursor-pointer pb-2 border-b border-slate-50" onClick={handleTryAnother}>
-            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
+            {/* <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            </div> */}
+            <img src="/favicon.svg" alt="SkillPath AI Logo" className="h-8 w-auto" />
             <span className="text-base font-bold font-outfit bg-gradient-to-r from-brand-900 to-brand-700 bg-clip-text text-transparent">
               SkillPath AI
             </span>
@@ -122,7 +124,7 @@ export default function AuthView({
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 font-sans leading-relaxed">
               {currentView === 'login' 
-                ? 'Masuk untuk mengakses peta jalan keahlian khusus Anda.' 
+                ? 'Masuk untuk mengakses skill path khusus Anda.' 
                 : 'Daftar untuk memulai diagnosis dan memetakan perkembangan keahlian Anda.'}
             </p>
           </div>

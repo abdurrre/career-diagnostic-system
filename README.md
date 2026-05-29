@@ -121,7 +121,7 @@ http://localhost:5173
 
 ## 🌟 Fitur Utama Unggulan
 
-- **Pindaian CV Real-Time:** Unggah CV berbentuk PDF, pilih target profesi, dan dapatkan analisis kecocokan instan tanpa delay buatan (_non-blocking dynamic progression_).
+- **Scanan CV Real-Time:** Unggah CV berbentuk PDF, pilih target profesi, dan dapatkan analisis kecocokan instan tanpa delay buatan (_non-blocking dynamic progression_).
 - **Pemetaan Kesenjangan Keahlian Komprehensif:** Mengidentifikasi keterampilan yang sudah cocok serta memetakan _skill gaps_ secara dinamis dari database tanpa ada data kustom yang terbuang (_dynamic Skill auto-creation_).
 - **Asisten AI Chatbot Interaktif:** Obrolan langsung dengan AI yang peka konteks (_context-aware_), langsung memahami hasil laporan CV Anda untuk memberikan tips perbaikan portofolio.
 - **Autentikasi Aman & Riwayat Dinamis:** Registrasi aman dilengkapi pencegahan duplikasi email secara visual, serta penyimpanan riwayat analisis terenkripsi JWT.
