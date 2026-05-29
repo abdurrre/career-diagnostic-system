@@ -1,0 +1,3 @@
+- skill_network_edges.csv -> Dataset ini menjawab Skill apa yang sering diminta bersamaan : https://colab.research.google.com/drive/1afksWxjZyXULdTBzFulBjhFHe1j5v5Sb?usp=sharing
+- knowledge_base_skills.csv -> ini hasil dataset yang dari EDA_fix.ipynb
+- master_job_postings.csv -> ini adalah dataset bismillah_fix_dataset dari Data_augmented_part_2.ipynb
