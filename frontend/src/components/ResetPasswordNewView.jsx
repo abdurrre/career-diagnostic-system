@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, User, Lock, AlertCircle, Loader2, ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import authVisualImg from '../assets/auth_visual.png';
+import { API_BASE_URL } from '../config/api';
 
 export default function ResetPasswordNewView({
   currentView,
@@ -37,11 +38,31 @@ export default function ResetPasswordNewView({
     }
 
     setLoading(true);
-    // Simulate updating password
-    setTimeout(() => {
+    const token = localStorage.getItem('reset_token');
+    const email = localStorage.getItem('reset_email');
+
+    fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, token, newPassword })
+    })
+    .then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Gagal mengubah kata sandi.');
+      }
       setLoading(false);
+      localStorage.removeItem('reset_token');
+      localStorage.removeItem('reset_email');
+      localStorage.removeItem('mock_recovery_url');
       setCurrentView('reset-password-success');
-    }, 1200);
+    })
+    .catch(err => {
+      setLoading(false);
+      setError(err.message || 'Terjadi kesalahan jaringan.');
+    });
   };
 
   return (

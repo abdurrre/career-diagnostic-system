@@ -63,6 +63,21 @@ function App() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
+  // Parse URL query parameters for forgot-password redirection
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const viewParam = params.get('view');
+    const tokenParam = params.get('token');
+    const emailParam = params.get('email');
+
+    if (viewParam === 'reset-password-new' && tokenParam && emailParam) {
+      localStorage.setItem('reset_token', tokenParam);
+      localStorage.setItem('reset_email', emailParam);
+      setCurrentView('reset-password-new');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   // 1. Fetch target professions list on mount
   useEffect(() => {
     fetch(`${API_BASE_URL}/professions`)

@@ -77,15 +77,6 @@ export default function ResetPasswordSuccessView({
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
-
-        {/* Footer */}
-        <div className="text-[11px] text-slate-400 font-sans border-t border-slate-50 pt-6">
-          Butuh bantuan? Hubungi kami di{' '}
-          <a href="#contact" className="font-semibold text-brand-600 hover:underline">
-            support@skillpath.ai
-          </a>
-        </div>
-
       </div>
     </motion.main>
   );

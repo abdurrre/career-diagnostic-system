@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, User, Mail, AlertCircle, Loader2, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import authVisualImg from '../assets/auth_visual.png';
+import { API_BASE_URL } from '../config/api';
 
 export default function ForgotPasswordView({
   currentView,
@@ -29,11 +30,29 @@ export default function ForgotPasswordView({
     }
 
     setLoading(true);
-    // Simulate sending recovery email (1.2 seconds)
-    setTimeout(() => {
+
+    fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    })
+    .then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Gagal memproses permintaan lupa kata sandi.');
+      }
       setLoading(false);
       setSuccess(true);
-    }, 1200);
+      if (data.recoveryUrl) {
+        localStorage.setItem('mock_recovery_url', data.recoveryUrl);
+      }
+    })
+    .catch(err => {
+      setLoading(false);
+      setError(err.message || 'Terjadi kesalahan jaringan.');
+    });
   };
 
   return (
@@ -181,20 +200,7 @@ export default function ForgotPasswordView({
                       <p className="text-emerald-700 leading-relaxed font-sans text-xs">
                         Tautan pemulihan kata sandi telah dikirim. Mohon cek email Anda.
                       </p>
-                      
-                      {/* Simulation Controller */}
-                      <div className="flex flex-wrap items-center gap-2 mt-2.5 pt-2 border-t border-emerald-200/50">
-                        <span className="text-[9px] font-bold text-emerald-800/60 uppercase tracking-wider block w-full mb-0.5">
-                          Simulasikan Tautan Email Masuk:
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setCurrentView('reset-password-new')}
-                          className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] font-sans transition-all active:scale-[0.96] shadow-sm cursor-pointer"
-                        >
-                          Klik Tautan Pemulihan ✉
-                        </button>
-                      </div>
+
                     </div>
                   </motion.div>
                 )}
