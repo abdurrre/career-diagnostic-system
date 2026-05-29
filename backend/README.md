@@ -8,13 +8,16 @@ Server backend utama yang bertindak sebagai gerbang API (*API Gateway*), penyedi
 
 1. **Autentikasi Pengguna & Token JWT:**
    * Registrasi akun dan login aman menggunakan token enkripsi JWT (*JSON Web Token*) yang disimpan secara lokal di frontend.
-2. **Validasi Pendaftaran Duplikat:**
-   * Dilengkapi pemeriksaan integritas database sebelum mendaftarkan akun baru. Jika alamat email yang sama sudah terdaftar, server akan menolak pendaftaran dengan mengirimkan status `400 Bad Request` beserta pesan kesalahan terjemahan Indonesia yang ramah untuk ditampilkan di antarmuka.
-3. **Persistensi Riwayat yang Fleksibel (`getUserHistories`):**
+2. **Mitigasi Serangan User Enumeration (Keamanan Akun):**
+   * Menyeragamkan respons galat kegagalan masuk/login (`"Email atau password salah"`) dan status HTTP `401 Unauthorized` baik ketika email tidak ditemukan di database maupun ketika kata sandi salah, demi mencegah pelacakan dan pengumpulan daftar akun aktif oleh penyerang.
+3. **Lupa & Reset Kata Sandi Riil (Nodemailer SMTP):**
+   * Mengintegrasikan alur lupa kata sandi riil dengan membuat token stateless JWT dinamis yang ditandatangani menggunakan `JWT_SECRET` + `user.password` (hash sandi saat ini). Token otomatis kedaluwarsa setelah dipakai satu kali.
+   * Menggunakan **Nodemailer** untuk mengirimkan email HTML formal langsung ke kotak masuk pengguna yang berisi tombol tautan pemulihan.
+4. **Persistensi Riwayat yang Fleksibel (`getUserHistories`):**
    * Endpoint `/analysis/history` memuat seluruh log riwayat pencarian pengguna dengan memetakan asosiasi relasi Sequelize kompleks (`User`, `History`, `Profession`, `Skill`, `HistorySkill`).
-4. **Pembuatan Otomatis Keahlian Baru (`saveHistory`):**
+5. **Pembuatan Otomatis Keahlian Baru (`saveHistory`):**
    * Menyelesaikan masalah hilangnya kesenjangan keterampilan (*gaps*) kustom yang dianalisis oleh AI. Jika hasil analisis AI menghasilkan nama keahlian baru yang belum ada di tabel database, server secara otomatis akan membuat record keahlian baru tersebut di tabel `skills` menggunakan logika pencarian/pembuatan dinamis sebelum menautkannya ke riwayat pencarian.
-5. **Proxy Chatbot AI Engine (`chatWithAI`):**
+6. **Proxy Chatbot AI Engine (`chatWithAI`):**
    * Membuka rute aman `/analysis/chat` untuk menghubungkan *chat widget* frontend ke FastAPI AI Engine, meneruskan konteks CV, skor kesesuaian, dan menindaklanjuti batas aman permintaan (*rate-limiting errors*) secara transparan.
 
 ---
@@ -23,8 +26,9 @@ Server backend utama yang bertindak sebagai gerbang API (*API Gateway*), penyedi
 
 * **Runtime:** Node.js (v18+)
 * **Framework:** Express.js (untuk routing dan middleware)
-* **ORM Database:** Sequelize (pemetaan objek relasional untuk database)
+* **ORM Database:** Sequelize v6 (pemetaan objek relasional untuk database)
 * **Database Driver:** MySQL (menggunakan `mysql2` dengan enkripsi SSL untuk kesiapan cloud)
+* **Email Service:** Nodemailer SMTP Email (mendukung integrasi email riil via TLS/STARTTLS)
 * **HTTP Client:** Axios (untuk komunikasi internal antarservis ke AI Engine)
 * **Utilitas:** bcryptjs (enkripsi kata sandi) & jsonwebtoken (autentikasi token), pdf-parse (untuk ekstraksi teks PDF dengan kompatibilitas serverless)
 
@@ -50,6 +54,13 @@ AI_SCAN_SERVICE_URL=https://rizsd21-career-diagnostic-ai-engine.hf.space/api/dia
 AI_CHAT_SERVICE_URL=https://rizsd21-career-diagnostic-ai-engine.hf.space/api/chat
 GROQ_API_KEY=your_groq_api_key_here
 AI_ENGINE_API_KEY=your_secure_ai_engine_secret_here
+
+# Konfigurasi SMTP untuk Pengiriman Email
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=email_pengirim@gmail.com
+SMTP_PASS=kata_sandi_aplikasi_google_16_karakter
+FRONTEND_URL=http://localhost:5173
 ```
 
 ---

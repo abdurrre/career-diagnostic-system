@@ -1,4 +1,4 @@
-# 🌌 Career Diagnostic System
+# 🌌 SkillPath AI - Career Diagnostic System
 
 Sistem Analisis Prediktif Kesenjangan Keterampilan Berbasis NLP (Natural Language Processing) untuk Bidang Teknologi & Computer Science. Platform ini memindai CV (dalam format PDF), mencocokkannya dengan kualifikasi standar industri untuk profesi target, menghitung skor kecocokan (_match score_), memetakan keahlian yang teridentifikasi, mengidentifikasi kesenjangan keterampilan (_skill gaps_), serta menyediakan asisten AI Chatbot untuk panduan perbaikan karier secara interaktif.
 
@@ -10,20 +10,55 @@ Sistem ini dibangun menggunakan arsitektur modular yang membagi tanggung jawab a
 
 ```mermaid
 graph TD
-    A[Frontend: Vite + React] <-->|HTTP / JSON| B[Backend: Node.js Express Gateway]
-    B <-->|Sequelize ORM| C[(Database: SQLite/PostgreSQL)]
-    B <-->|HTTP Proxy| D[AI Engine: FastAPI + NLP]
-    E[Data Science: Model & Dataset Seeds] -.->|Model Export| D
+    A[Frontend: Vite + React 19] <-->|HTTP / JSON| B[Backend: Node.js Express Gateway]
+    B <-->|Sequelize ORM| C[(Database: MySQL Cloud Aiven)]
+    B <-->|HTTP Proxy + API Key Guard| D[AI Engine: FastAPI + TensorFlow]
+    E[Data Science: Jupyter + ML Model] -.->|Model Export| D
 ```
 
-1. **`frontend/`** (Vite + React + Tailwind CSS): Dashboard klien premium dengan estetika modern, transisi halus, widgets chat interaktif, dan penanganan layar unggah CV yang responsif.
-2. **`backend/`** (Node.js + Express + Sequelize): Gateway utama untuk autentikasi pengguna (JWT), manajemen riwayat pencarian, penyimpanan relasi riwayat-keterampilan dinamis, dan proxy komunikasi ke AI Engine.
-3. **`ai_engine/`** (FastAPI + Python): Mesin inti kecerdasan buatan yang mengoperasikan algoritma ekstraksi teks NLP untuk memetakan CV terhadap standar industri serta agen chatbot interaktif.
-4. **`data_science/`** (Python + Jupyter): Ruang kerja riset untuk analisis dataset, pembuatan model klasifikasi, pembersihan kata kunci (_keywords_), dan eksperimen pemetaan keterampilan.
+1. **`frontend/` (Vite + React 19 + Tailwind CSS v4):** Dashboard klien premium dengan estetika modern, transisi halaman halus menggunakan Framer Motion v12, widget chat interaktif, dan penanganan layar unggah (upload) CV PDF yang responsif.
+2. **`backend/` (Node.js + Express v5 + Sequelize):** API Gateway utama untuk autentikasi pengguna (JWT Stateless), manajemen riwayat pencarian, penyimpanan relasi riwayat-keterampilan dinamis di MySQL Cloud, dan proxy komunikasi aman ke AI Engine dengan pengiriman email nyata menggunakan Nodemailer SMTP.
+3. **`ai_engine/` (FastAPI + TensorFlow 2.21 + Keras):** Mesin inti kecerdasan buatan yang mengoperasikan model klasifikasi khusus (Custom Classifier) & Named Entity Recognition (NER) untuk memetakan CV terhadap standar industri serta mengintegrasikan Groq Cloud API (Llama 3) untuk agen chatbot interaktif. Hosted secara aman di Hugging Face Spaces.
+4. **`data_science/` (Python + Jupyter Notebook):** Ruang kerja riset untuk pemodelan klasifikasi pekerjaan, pembersihan kata kunci (_keywords_) dataset lowongan kerja (JobStreet), dan eksperimen pemetaan keterampilan.
 
 ---
 
-# 🚀 Langkah Instalasi & Menjalankan Proyek
+## 🚀 Teknologi yang Digunakan (Tech Stack)
+
+### 💻 Frontend
+
+- **Core:** React 19, HTML5, Vanilla JavaScript.
+- **Build Tool & Server:** Vite v8 (kecepatan kompilasi & HMR instan).
+- **Styling:** Tailwind CSS v4 & CSS kustom (Glassmorphism, ambient gradients).
+- **Animations:** Framer Motion v12 (transisi halaman & efek spring).
+- **Icons:** Lucide React (ikon minimalis berkualitas tinggi).
+- **Branding:** Favicon kustom terintegrasi (.svg & .ico) di seluruh halaman UI.
+- **Deployment:** Vercel Production.
+
+### ⚙️ Backend Gateway
+
+- **Framework:** Express v5 (Node.js runtime).
+- **Database ORM:** Sequelize v6 (MySQL database engine).
+- **Database Engine:** MySQL Cloud (Aiven Cloud Services).
+- **Authentication:** JSON Web Token (JWT) stateless & Bcryptjs.
+- **Email Dispatch:** Nodemailer SMTP Email (mendukung integrasi email riil seperti Gmail App Password & STARTTLS).
+- **File Processing:** Multer (multipart upload) & PDF-parse (ekstraksi teks PDF lokal).
+- **HTTP Client:** Axios (menghubungkan proxy API ke AI Engine secara aman).
+- **Deployment:** Vercel Production.
+
+### 🧠 AI Engine
+
+- **Framework:** FastAPI & Uvicorn (Python 3.9+).
+- **Deep Learning:** TensorFlow 2.21.0 & Keras (Custom Classifier & NER models).
+- **Machine Learning & Data Processing:** Scikit-learn v1.8.0, Pandas v3.0.2, Numpy v2.4.4.
+- **Generative AI Agent:** Groq Cloud API (Llama 3) untuk asisten chatbot kustom.
+- **Rate Limiting:** Slowapi (mencegah kelebihan beban API).
+- **Machine Learning Tracking:** Weights & Biases (W&B) untuk mencatat hasil training model.
+- **Hosting:** Hugging Face Spaces (dengan pengamanan API Key & Guardrails).
+
+---
+
+## 🏃 Langkah Instalasi & Menjalankan Proyek
 
 Pastikan komputer Anda telah terinstal:
 
@@ -33,16 +68,16 @@ Pastikan komputer Anda telah terinstal:
 
 ---
 
-## 1️⃣ Clone Repository
+### 1️⃣ Clone Repository & Setup Git
 
 ```bash
 git clone <repository-url>
-cd <nama-folder-project>
+cd career-diagnostic-system
 ```
 
-## 2️⃣ Menjalankan AI Engine (`ai_engine/`)
+### 2️⃣ Menjalankan AI Engine (`ai_engine/`)
 
-AI Engine bertanggung jawab untuk proses NLP, analisis CV, ekstraksi skill, dan chatbot AI.
+AI Engine bertanggung jawab untuk proses NLP, klasifikasi CV, ekstraksi skill, dan chatbot AI.
 
 ```bash
 cd ai_engine
@@ -61,25 +96,21 @@ cd src
 uvicorn api:app --reload
 ```
 
-📍 AI Engine berjalan di:
-
-```txt
-http://localhost:8000
-```
+📍 AI Engine lokal berjalan di: `http://localhost:8000`
 
 ---
 
-## 3️⃣ Menjalankan Backend Gateway (`backend/`)
+### 3️⃣ Menjalankan Backend Gateway (`backend/`)
 
 Backend berfungsi sebagai API Gateway, autentikasi JWT, database persistence, dan penghubung frontend dengan AI Engine.
 
 ```bash
 cd backend
 
-# Copy file environment
+# Salin file environment
 cp .env.example .env
 
-# Install Dependencies
+# Jalankan instalasi dependensi
 npm install
 
 # Menjalankan Seeder Database
@@ -89,17 +120,13 @@ npx sequelize-cli db:seed:all
 npm run dev
 ```
 
-📍 Backend berjalan di:
-
-```txt
-http://localhost:5000
-```
+📍 Backend lokal berjalan di: `http://localhost:5000`
 
 ---
 
-## 4️⃣ Menjalankan Frontend Dashboard (`frontend/`)
+### 4️⃣ Menjalankan Frontend Dashboard (`frontend/`)
 
-Frontend menggunakan Vite + React untuk menyediakan antarmuka pengguna modern dan interaktif.
+Frontend menyediakan antarmuka pengguna modern dan interaktif.
 
 ```bash
 cd frontend
@@ -111,21 +138,20 @@ npm install
 npm run dev
 ```
 
-📍 Frontend berjalan di:
-
-```txt
-http://localhost:5173
-```
+📍 Frontend lokal berjalan di: `http://localhost:5173`
 
 ---
 
 ## 🌟 Fitur Utama Unggulan
 
-- **Scanan CV Real-Time:** Unggah CV berbentuk PDF, pilih target profesi, dan dapatkan analisis kecocokan instan tanpa delay buatan (_non-blocking dynamic progression_).
-- **Pemetaan Kesenjangan Keahlian Komprehensif:** Mengidentifikasi keterampilan yang sudah cocok serta memetakan _skill gaps_ secara dinamis dari database tanpa ada data kustom yang terbuang (_dynamic Skill auto-creation_).
+- **Upload & Scan CV Real-Time:** Unggah CV berbentuk PDF, pilih target profesi, dan dapatkan analisis kecocokan instan tanpa delay buatan (_non-blocking dynamic progression_).
+- **Pemetaan Kesenjangan Keahlian Komprehensif:** Mengidentifikasi keterampilan yang sudah cocok serta memetakan _skill gaps_ secara dinamis dari database tanpa ada data kustom yang terbuang.
 - **Asisten AI Chatbot Interaktif:** Obrolan langsung dengan AI yang peka konteks (_context-aware_), langsung memahami hasil laporan CV Anda untuk memberikan tips perbaikan portofolio.
-- **Autentikasi Aman & Riwayat Dinamis:** Registrasi aman dilengkapi pencegahan duplikasi email secara visual, serta penyimpanan riwayat analisis terenkripsi JWT.
-- **Bahasa Indonesia yang Natural:** Seluruh antarmuka dikemas menggunakan Bahasa Indonesia yang profesional namun tetap ramah dan modern.
+- **Keamanan Autentikasi Modern (Forgot & Reset Password):**
+  - Alur lupa kata sandi riil terintegrasi penuh lewat email SMTP Nodemailer & stateless JWT token.
+  - Ikon mata _toggle_ visibilitas kata sandi di layar masuk, daftar, dan reset kata sandi baru.
+  - Mitigasi serangan _User Enumeration_ pada kesalahan login/register dengan menyamakan pesan galat (_"Email atau password salah"_).
+- **Disclaimer Transparansi AI:** Spanduk formal pada halaman laporan yang memperjelas bahwa hasil analisis berbasis kecerdasan buatan bersifat estimasi pendukung keputusan dan tidak dijamin 100% akurat.
 
 ---
 
