@@ -1,5 +1,6 @@
 const { History, Skill, HistorySkill, Profession } = require("../models/index");
 const axios = require("axios");
+const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
 require("dotenv").config();
 
@@ -30,7 +31,7 @@ exports.scanCV = async (req, res) => {
     let pdfText = "";
     try {
       const uint8ArrayData = new Uint8Array(req.file.buffer);
-      const pdfData = await new PDFParse(uint8ArrayData).getText();
+      const pdfData = await new PDFParse(uint8ArrayData, { CanvasFactory }).getText();
       pdfText = pdfData.text;
     } catch (pdfError) {
       console.error(pdfError);

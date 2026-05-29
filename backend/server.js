@@ -25,19 +25,6 @@ app.use((req, res) => {
   res.status(404).json({ message: "Endpoint tidak ditemukan" });
 });
 
-// koneksi database
-sequelize
-  .sync()
-  .then(() => {
-    console.log("Database terhubung dan tabel berhasil disinkronkan");
-    app.listen(PORT, () => {
-      console.log(`Server berjalan pada http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.log("Gagal terhubung ke database: ", err);
-  });
-
 module.exports = app;
 
 if (process.env.NODE_ENV !== "production") {
@@ -55,6 +42,6 @@ if (process.env.NODE_ENV !== "production") {
 } else {
   sequelize
     .authenticate()
-    .then(() => console.log("Koneksi database berhasil (productio)"))
+    .then(() => console.log("Koneksi database berhasil (production)"))
     .catch((err) => console.error("Gagal koneksi database: ", err));
 }
