@@ -24,25 +24,37 @@ Server backend utama yang bertindak sebagai gerbang API (*API Gateway*), penyedi
 * **Runtime:** Node.js (v18+)
 * **Framework:** Express.js (untuk routing dan middleware)
 * **ORM Database:** Sequelize (pemetaan objek relasional untuk database)
-* **Database Driver:** SQLite (pengembangan lokal) / PostgreSQL (siap produksi)
+* **Database Driver:** MySQL (menggunakan `mysql2` dengan enkripsi SSL untuk kesiapan cloud)
 * **HTTP Client:** Axios (untuk komunikasi internal antarservis ke AI Engine)
-* **Utilitas:** bcryptjs (enkripsi kata sandi) & jsonwebtoken (autentikasi token)
+* **Utilitas:** bcryptjs (enkripsi kata sandi) & jsonwebtoken (autentikasi token), pdf-parse (untuk ekstraksi teks PDF dengan kompatibilitas serverless)
 
 ---
 
 ## ⚙️ Variabel Lingkungan (.env)
 
-Buat berkas `.env` di direktori `backend/` dengan parameter berikut:
+Buat berkas `.env` di direktori `backend/` dengan parameter lengkap berikut:
 ```env
 PORT=5000
 JWT_SECRET=rahasia_sangat_kuat_2026
-AI_SCAN_SERVICE_URL=http://localhost:8000/api/scan
-AI_CHAT_SERVICE_URL=http://localhost:8000/api/chat
+
+# Konfigurasi Database (MySQL)
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASS=
+DB_NAME=capstone_project
+DB_DIALECT=mysql
+
+# Layanan AI Engine (Hugging Face / FastAPI)
+AI_SCAN_SERVICE_URL=https://rizsd21-career-diagnostic-ai-engine.hf.space/api/diagnose
+AI_CHAT_SERVICE_URL=https://rizsd21-career-diagnostic-ai-engine.hf.space/api/chat
+GROQ_API_KEY=your_groq_api_key_here
+AI_ENGINE_API_KEY=your_secure_ai_engine_secret_here
 ```
 
 ---
 
-## 🏃 Cara Menjalankan Server
+## 🏃 Cara Menjalankan Server secara Lokal
 
 1. Masuk ke direktori `backend/`:
    ```bash
@@ -56,4 +68,21 @@ AI_CHAT_SERVICE_URL=http://localhost:8000/api/chat
    ```bash
    npm run dev
    ```
-4. Server akan aktif pada alamat `http://localhost:5000` dan secara otomatis melakukan sinkronisasi tabel database.
+4. Server akan aktif pada alamat `http://localhost:5000` dan secara otomatis melakukan sinkronisasi database lokal.
+
+---
+
+## 🚀 Deployment (Serverless Vercel)
+
+Backend ini dirancang dengan struktur serverless sehingga dapat di-deploy ke **Vercel** dengan sangat efisien.
+
+1. **Persiapan:**
+   * Pastikan berkas `vercel.json` dan ekspor `module.exports = app` di `server.js` tetap terjaga.
+   * Pastikan database cloud (seperti Aiven atau TiDB Cloud MySQL) telah dibuat dan mendukung koneksi aman SSL.
+2. **Langkah Deploy:**
+   * Jalankan `vercel` di dalam folder `backend/` untuk menghubungkan project.
+   * Masukkan seluruh Environment Variables di atas ke halaman Settings Vercel Dashboard.
+   * Terapkan rilis production dengan menjalankan:
+     ```bash
+     vercel --prod
+     ```
