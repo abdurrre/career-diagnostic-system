@@ -196,42 +196,46 @@ export default function AuthView({
             </div>
 
             {/* Confirm Password Input (Register Only) */}
-            {currentView === 'register' && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="space-y-2"
-              >
-                <label className="text-xs font-bold text-slate-700 font-outfit tracking-wide block">
-                  Konfirmasi Kata Sandi
-                </label>
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={authConfirmPassword}
-                    onChange={(e) => setAuthConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="premium-input pl-11 pr-11 text-sm font-sans"
-                    required
-                  />
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                    <Lock className="w-4.5 h-4.5" />
+            <AnimatePresence>
+              {currentView === 'register' && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  className="space-y-2 overflow-hidden"
+                >
+                  <label className="text-xs font-bold text-slate-700 font-outfit tracking-wide block">
+                    Konfirmasi Kata Sandi
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={authConfirmPassword}
+                      onChange={(e) => setAuthConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="premium-input pl-11 pr-11 text-sm font-sans"
+                      required
+                    />
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                      <Lock className="w-4.5 h-4.5" />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none flex items-center justify-center cursor-pointer"
+                      aria-label={showConfirmPassword ? "Sembunyikan konfirmasi kata sandi" : "Tampilkan konfirmasi kata sandi"}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-4.5 h-4.5" />
+                      ) : (
+                        <Eye className="w-4.5 h-4.5" />
+                      )}
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none flex items-center justify-center cursor-pointer"
-                    aria-label={showConfirmPassword ? "Sembunyikan konfirmasi kata sandi" : "Tampilkan konfirmasi kata sandi"}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="w-4.5 h-4.5" />
-                    ) : (
-                      <Eye className="w-4.5 h-4.5" />
-                    )}
-                  </button>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Dynamic Auth Error alerts banner */}
             {authError && (
