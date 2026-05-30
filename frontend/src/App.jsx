@@ -261,6 +261,14 @@ function App() {
 
       const scanResult = await response.json();
 
+      if (scanResult.score === undefined || scanResult.score === null) {
+        setIsAnalyzing(false);
+        setToastMessage("Gagal menganalisis CV: AI tidak memberikan skor kecocokan yang valid.");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 5000);
+        return;
+      }
+
       setIsAnalyzing(false);
       setAnalysisSuccess(true);
       setAnalyzedRole(scanResult.profession_name || selectedRole);
@@ -280,7 +288,7 @@ function App() {
         }));
 
       const dynamicRolePayload = {
-        matchScore: Math.round(scanResult.score || 78),
+        matchScore: Math.round(scanResult.score),
         skills: matchedSkills.length > 0 ? matchedSkills : ['Python', 'SQL', 'Git', 'Team Collaboration'],
         gaps: missedGaps.length > 0 ? missedGaps : [
           { title: 'System Orchestration', tier: 'CRITICAL', description: 'Bridge standard operational gaps.' }
