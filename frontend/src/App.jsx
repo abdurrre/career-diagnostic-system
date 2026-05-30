@@ -269,10 +269,6 @@ function App() {
         return;
       }
 
-      setIsAnalyzing(false);
-      setAnalysisSuccess(true);
-      setAnalyzedRole(scanResult.profession_name || selectedRole);
-
       // Convert the returned skill_analysis records to dynamic ReportView parameters
       const skillAnalysis = scanResult.skill_analysis || [];
       const matchedSkills = skillAnalysis
@@ -287,12 +283,22 @@ function App() {
           description: item.description || 'Kesenjangan kemampuan keahlian yang terpetakan berdasarkan kebutuhan standar industri.'
         }));
 
+      if (matchedSkills.length === 0 && missedGaps.length === 0) {
+        setIsAnalyzing(false);
+        setToastMessage("Gagal menganalisis CV: AI tidak mendeteksi data keahlian atau kesenjangan yang valid.");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 5000);
+        return;
+      }
+
+      setIsAnalyzing(false);
+      setAnalysisSuccess(true);
+      setAnalyzedRole(scanResult.profession_name || selectedRole);
+
       const dynamicRolePayload = {
         matchScore: Math.round(scanResult.score),
-        skills: matchedSkills.length > 0 ? matchedSkills : ['Python', 'SQL', 'Git', 'Team Collaboration'],
-        gaps: missedGaps.length > 0 ? missedGaps : [
-          { title: 'System Orchestration', tier: 'CRITICAL', description: 'Bridge standard operational gaps.' }
-        ]
+        skills: matchedSkills,
+        gaps: missedGaps
       };
 
       // Cache inside active dataset list
