@@ -31,7 +31,9 @@ exports.scanCV = async (req, res) => {
     let pdfText = "";
     try {
       const uint8ArrayData = new Uint8Array(req.file.buffer);
-      const pdfData = await new PDFParse(uint8ArrayData, { CanvasFactory }).getText();
+      const pdfData = await new PDFParse(uint8ArrayData, {
+        CanvasFactory,
+      }).getText();
       pdfText = pdfData.text;
     } catch (pdfError) {
       console.error(pdfError);
@@ -44,14 +46,18 @@ exports.scanCV = async (req, res) => {
     // service ai
     let aiResponse;
     try {
-      aiResponse = await axios.post(process.env.AI_SCAN_SERVICE_URL, {
-        raw_text: finalRawTextInput,
-        target_profession,
-      }, {
-        headers: {
-          "X-API-Key": process.env.AI_ENGINE_API_KEY,
+      aiResponse = await axios.post(
+        process.env.AI_SCAN_SERVICE_URL,
+        {
+          raw_text: finalRawTextInput,
+          target_profession,
         },
-      });
+        {
+          headers: {
+            "X-API-Key": process.env.AI_ENGINE_API_KEY,
+          },
+        },
+      );
     } catch (aiError) {
       return res.status(502).json({
         message: "Gagal mendapatkan respon dari AI Engine",
@@ -154,6 +160,36 @@ exports.saveHistory = async (req, res) => {
   }
 };
 
+exports.deleteHistory = async (req, res) => {
+  try {
+    const id_user = req.user.id;
+    const { id } = req.params;
+
+    const history = await History.findOne({
+      where: { id, id_user },
+    });
+
+    if (!history) {
+      return res.status(404).json({
+        message:
+          "Riwayat tidak ditemukan atau Anda tidak memiliki akses untuk menghapus data ini",
+      });
+    }
+
+    await HistorySkill.destroy({
+      where: { id_history: id },
+    });
+
+    await history.destroy();
+
+    res.status(200).json({ message: "Riwayat analisis berhasil dihapus" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Gagal menghapus riwayat", error: error.message });
+  }
+};
+
 // ambil history user
 exports.getUserHistories = async (req, res) => {
   try {
@@ -187,16 +223,20 @@ exports.chatWithAI = async (req, res) => {
 
     let aiResponse;
     try {
-      aiResponse = await axios.post(chatServiceUrl, {
-        message,
-        profession_name,
-        score,
-        skill_analysis,
-      }, {
-        headers: {
-          "X-API-Key": process.env.AI_ENGINE_API_KEY,
+      aiResponse = await axios.post(
+        chatServiceUrl,
+        {
+          message,
+          profession_name,
+          score,
+          skill_analysis,
         },
-      });
+        {
+          headers: {
+            "X-API-Key": process.env.AI_ENGINE_API_KEY,
+          },
+        },
+      );
     } catch (aiError) {
       console.error(aiError);
 

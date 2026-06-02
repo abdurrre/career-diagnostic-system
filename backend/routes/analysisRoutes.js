@@ -34,6 +34,8 @@ router.post("/save", authMiddleware, analysisController.saveHistory);
 
 router.get("/history", authMiddleware, analysisController.getUserHistories);
 
+router.delete("/history/:id", authMiddleware, analysisController.deleteHistory);
+
 router.post("/chat", analysisController.chatWithAI);
 
 module.exports = router;
