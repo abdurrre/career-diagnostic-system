@@ -63,7 +63,8 @@ export default function ReportView({
   currentRoleData,
   handleTryAnother,
   handleSaveResults,
-  saveLoading
+  saveLoading,
+  showSaveButton
 }) {
   if (currentView !== 'report') {
     return null;
@@ -111,20 +112,22 @@ export default function ReportView({
             Coba Profesi Lain
           </button>
           
-          <button 
-            onClick={handleSaveResults}
-            disabled={saveLoading}
-            className={`px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center gap-2 active:scale-[0.98] ${
-              saveLoading ? 'opacity-85 cursor-not-allowed' : ''
-            }`}
-          >
-            {saveLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Bookmark className="w-4 h-4" />
-            )}
-            <span>{saveLoading ? 'Menyimpan...' : 'Simpan Hasil'}</span>
-          </button>
+          {showSaveButton && (
+            <button 
+              onClick={handleSaveResults}
+              disabled={saveLoading}
+              className={`px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/10 hover:shadow-lg hover:shadow-brand-600/20 transition-all flex items-center gap-2 active:scale-[0.98] ${
+                saveLoading ? 'opacity-85 cursor-not-allowed' : ''
+              }`}
+            >
+              {saveLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Bookmark className="w-4 h-4" />
+              )}
+              <span>{saveLoading ? 'Menyimpan...' : 'Simpan Hasil'}</span>
+            </button>
+          )}
         </div>
       </div>
 

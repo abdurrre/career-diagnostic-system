@@ -56,7 +56,7 @@ function App() {
 
   // Analysis / Loading Mock states
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [, setAnalysisSuccess] = useState(false);
+  const [analysisSuccess, setAnalysisSuccess] = useState(false);
   const [loadingStep, setLoadingStep] = useState(1);
 
   // Auth inputs states
@@ -360,6 +360,7 @@ function App() {
 
   // Centralized report loading action
   const handleLoadReport = (target) => {
+    setAnalysisSuccess(false);
     if (typeof target === "string") {
       setAnalyzedRole(target);
     } else if (target && typeof target === "object") {
@@ -700,6 +701,7 @@ function App() {
           handleTryAnother={handleTryAnother}
           handleSaveResults={handleSaveResults}
           saveLoading={saveLoading}
+          showSaveButton={analysisSuccess}
         />
 
         {/* VIEW 3: DYNAMIC FULL-SCREEN AUTH VIEWS (CAPTCHA Disabled) */}
