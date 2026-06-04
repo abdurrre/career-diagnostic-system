@@ -79,6 +79,19 @@ cd career-diagnostic-system
 
 AI Engine bertanggung jawab untuk proses NLP, klasifikasi CV, ekstraksi skill, dan chatbot AI.
 
+File model dan dataset tidak disertakan langsung di dalam repository karena ukuran file cukup besar.
+Silakan unduh model melalui tautan Google Drive berikut:
+
+[Download Model](https://drive.google.com/drive/u/1/folders/1CjLhVNm2jlByMSneP5yuIcsrnnHGU6Fa)
+[Download full data](https://drive.google.com/drive/folders/1mQmgj-EbrIIAD_WBxBgbkPZeNCJMbySr)
+
+Setelah mengunduh file model dan full dataset, letakkan file tersebut ke dalam folder yang sesuai dengan struktur proyek:
+
+Models: ai_engine/models/
+Data: ai_engine/data/
+
+Pastikan nama file model sesuai dengan nama file yang dipanggil di dalam kode program agar aplikasi dapat berjalan dengan benar.
+
 ```bash
 cd ai_engine
 
